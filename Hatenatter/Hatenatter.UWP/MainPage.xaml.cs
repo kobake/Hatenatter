@@ -15,13 +15,13 @@ using Windows.UI.Xaml.Navigation;
 
 namespace Hatenatter.UWP
 {
-	public sealed partial class MainPage
-	{
-		public MainPage()
-		{
-			this.InitializeComponent();
+    public sealed partial class MainPage
+    {
+        public MainPage()
+        {
+            this.InitializeComponent();
 
-			LoadApplication(new Hatenatter.App());
-		}
-	}
+            LoadApplication(new Hatenatter.App());
+        }
+    }
 }
