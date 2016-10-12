@@ -19,10 +19,19 @@ namespace HatenatterConsole
             Console.WriteLine("--------");
             Task.Run(async () =>
             {
-                int n = await StartAuth();
+                //int n = await StartAuth();
+                var twitter = new TwitterApi(
+                    "YHLiiAcYskxyO1aJGg1DyUhCB",
+                    "bLAj2ybkvnAeIoT3cqas9sIOO36IlMbvsZakE0KdNkNb7awbqs",
+                    "115328417-sA6umXj4pnVv33PPcx4j4dOySHke9V6K737FP6NA",
+                    "Raf7pNp54enjYp3S81Mg0CYnUkDr8Oy9nZnNP48QR6eGf");
+                var response = await twitter.Tweet("Test");
+                Console.WriteLine("response = " + response);
             }).Wait();
             Console.WriteLine("--------");
         }
+
+
 
         private static readonly string randomStringTable = "0123456789abcdefghijklmnopqrstuvwxyz";
         private static string RandomString(int length)
@@ -127,7 +136,7 @@ namespace HatenatterConsole
                 authHeader = authHeader.Replace("{nonce}", nonce);
 
                 // signature (HMAC=SHA1)
-                string signature = GenerateSignature(tokenSecret, "POST", "https://www.hatena....", parameters);
+                //string signature = GenerateSignature(tokenSecret, "POST", "https://www.hatena....", parameters);
 
 
                 // authHeader = authHeader.Replace("{consumer_secret}", "yKV005kzISrG63/vk1l5mApZi8I="); //encode必要？
