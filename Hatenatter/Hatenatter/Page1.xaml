@@ -4,13 +4,20 @@
              x:Class="Hatenatter.Page1"
              xmlns:local="clr-namespace:Hatenatter;assembly=Hatenatter"
              >
-  <ListView x:Name="mylist" ItemsSource="{Binding}" VerticalOptions="FillAndExpand" HasUnevenRows="True">
-    <ListView.ItemTemplate>
-      <DataTemplate>
-        <ViewCell>
-          <local:MyListItemView />
-        </ViewCell>
-      </DataTemplate>
-    </ListView.ItemTemplate>
-  </ListView>
+  <StackLayout VerticalOptions="Start">
+    <Label Text="Hello" Margin="15,10,10,10" />
+    <Button x:Name="AuthButton" Text="Auth" Clicked="AuthButton_Clicked" />
+
+
+    <ListView x:Name="mylist" ItemsSource="{Binding}" VerticalOptions="FillAndExpand" HasUnevenRows="True">
+      <ListView.ItemTemplate>
+        <DataTemplate>
+          <ViewCell>
+            <local:MyListItemView />
+          </ViewCell>
+        </DataTemplate>
+      </ListView.ItemTemplate>
+    </ListView>
+  </StackLayout>
+  
 </ContentPage>
