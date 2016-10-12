@@ -24,7 +24,8 @@ namespace HatenatterConsole
                     "YHLiiAcYskxyO1aJGg1DyUhCB",
                     "bLAj2ybkvnAeIoT3cqas9sIOO36IlMbvsZakE0KdNkNb7awbqs",
                     "115328417-sA6umXj4pnVv33PPcx4j4dOySHke9V6K737FP6NA",
-                    "Raf7pNp54enjYp3S81Mg0CYnUkDr8Oy9nZnNP48QR6eGf");
+                    "Raf7pNp54enjYp3S81Mg0CYnUkDr8Oy9nZnNP48QR6eGf"
+                );
                 var response = await twitter.Tweet("Test");
                 Console.WriteLine("response = " + response);
             }).Wait();
