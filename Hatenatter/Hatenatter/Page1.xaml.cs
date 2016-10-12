@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using Xamarin.Forms;
@@ -56,26 +57,52 @@ namespace Hatenatter
             await DisplayAlert("Title", "result=" + result, "OK");
         }
 
+
         private async Task<int> StartAuth()
         {
-            
-            var httpClient = new HttpClient(); // Xamarin supports HttpClient!
+            // RequestToken取得
+            if (false)
+            {
+                var client = new HttpClient();
+                string url = " https://www.hatena.com/oauth/initiate ";
 
-            Task<string> contentsTask = httpClient.GetStringAsync("http://xamarin.com"); // async method!
+                // 共通ヘッダ設定
+                // http://stackoverflow.com/questions/14627399/setting-authorization-header-of-httpclient
+                // http://stackoverflow.com/questions/19039450/adding-authorization-to-the-headers
+                //client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", "Your Oauth token");
+                //var headers = new AuthenticationHeaderValue("Bearer", "Your Oauth token");
+                //headers.
+                //client.DefaultRequestHeaders.Authorization = headers;
+                //client.DefaultRequestHeaders.Add("Authorization", "");
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("");
 
-            // await! control returns to the caller and the task continues to run on another thread
-            string contents = await contentsTask;
+                // 送信データ
+                var content = new StringContent("scope=read_public");
+                
+                await client.PostAsync(url, content);
+            }
 
-            TestLabel.Text += "DownloadHomepage method continues after async call. . . . .\n";
+            // 通信サンプル
+            if (true)
+            {
+                var httpClient = new HttpClient(); // Xamarin supports HttpClient!
 
-            // After contentTask completes, you can calculate the length of the string.
-            int exampleInt = contents.Length;
+                Task<string> contentsTask = httpClient.GetStringAsync("http://xamarin.com"); // async method!
 
-            TestLabel.Text += "Downloaded the html and found out the length.\n\n\n";
+                // await! control returns to the caller and the task continues to run on another thread
+                string contents = await contentsTask;
 
-            TestLabel.Text += contents; // just dump the entire HTML
+                TestLabel.Text += "DownloadHomepage method continues after async call. . . . .\n";
 
-            return exampleInt; // Task<TResult> returns an object of type TResult, in this case int
+                // After contentTask completes, you can calculate the length of the string.
+                int exampleInt = contents.Length;
+
+                TestLabel.Text += "Downloaded the html and found out the length.\n\n\n";
+
+                TestLabel.Text += contents; // just dump the entire HTML
+
+                return exampleInt; // Task<TResult> returns an object of type TResult, in this case int
+            }
         }
     }
 }
