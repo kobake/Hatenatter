@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+using Xamarin.Auth;
 using Xamarin.Forms;
 
 namespace Hatenatter
@@ -49,17 +50,45 @@ namespace Hatenatter
             this.BindingContext = list;
         }
 
-        private async void AuthButton_Clicked(object sender, EventArgs e)
+        private void AuthButton_Clicked(object sender, EventArgs e)
         {
             // DisplayAlert("Title", "Message", "OK");
             // OAuth
-            int result = await StartAuth();
-            await DisplayAlert("Title", "result=" + result, "OK");
+            //int result = await StartAuth();
+            //await DisplayAlert("Title", "result=" + result, "OK");
+            System.Diagnostics.Debug.WriteLine("========== AuthButton_Clicked");
         }
 
 
         private async Task<int> StartAuth()
         {
+            if (true)
+            {
+                // https://components.xamarin.com/view/xamarin.auth
+                var auth = new OAuth2Authenticator(
+                    clientId: "OjrD3wav+EZbSw==",
+                    clientSecret: "yKV005kzISrG63/vk1l5mApZi8I=",
+                    scope: "read_public",
+                    authorizeUrl: new Uri("https://www.hatena.ne.jp/touch/oauth/authorize"),
+                    redirectUrl: new Uri("http://localhost"), //?
+                    accessTokenUrl: new Uri("https://www.hatena.com/oauth/token")
+                );
+
+                auth.Completed += (sender, eventArgs) =>
+                {
+                    //DismissViewController(true, null);
+                    if (eventArgs.IsAuthenticated)
+                    {
+                        // Use eventArgs.Account to do wonderful things
+                    }
+                };
+
+                //var intent = auth.get
+
+                //PresentViewController(auth.GetUI(), true, null);
+                return 0;
+            }
+
             // RequestToken取得
             if (false)
             {
@@ -83,7 +112,7 @@ namespace Hatenatter
             }
 
             // 通信サンプル
-            if (true)
+            if (false)
             {
                 var httpClient = new HttpClient(); // Xamarin supports HttpClient!
 
