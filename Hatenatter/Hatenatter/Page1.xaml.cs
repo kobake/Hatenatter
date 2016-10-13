@@ -54,7 +54,7 @@ namespace Hatenatter
         {
             // DisplayAlert("Title", "Message", "OK");
             // OAuth
-            //int result = await StartAuth();
+            int result = await StartAuth();
             await DisplayAlert("Title", "result", "OK");
             //System.Diagnostics.Debug.WriteLine("========== AuthButton_Clicked");
         }
@@ -63,6 +63,11 @@ namespace Hatenatter
         private async Task<int> StartAuth()
         {
             if (true)
+            {
+
+                return 0;
+            }
+            if (false)
             {
                 // https://components.xamarin.com/view/xamarin.auth
                 var auth = new OAuth2Authenticator(
