@@ -44,8 +44,34 @@ namespace Hatenatter.Droid
     {
         private Android.Widget.Button m_authButton;
 
+        protected override void OnResume()
+        {
+            base.OnResume();
+
+            string p = Intent.GetStringExtra("aa");
+            Log.Info("TEST", "=================== aa1 = " + p);
+
+            Log.Info("TEST", "================RESTORE=======================");
+            if (Intent.ActionView.Equals(Intent.Action))
+            {
+                Android.Net.Uri uri = Intent.Data;
+                if (uri != null)
+                {
+                    Log.Info("TEST", uri.ToString());
+                    Log.Info("TEST", uri.Query);
+                    Log.Info("TEST", string.Join(", ", uri.QueryParameterNames));
+                    string aa = uri.GetQueryParameter("aa");
+                    Log.Info("TEST", aa);
+                }
+            }
+            Log.Info("TEST", "=============================================");
+        }
+
         protected override void OnCreate(Bundle bundle)
         {
+            string p = Intent.GetStringExtra("aa");
+            Log.Info("TEST", "=================== aa2 = " + p);
+
             TabLayoutResource = Resource.Layout.Tabbar;
             ToolbarResource = Resource.Layout.Toolbar;
 
@@ -87,7 +113,10 @@ namespace Hatenatter.Droid
                 {
                     var b = v as Android.Widget.Button;
                     Android.Util.Log.Info("TEST", "Button!!" + b.Text);
-                    m_authButton = b;
+                    if(b.Text == "Auth")
+                    {
+                        m_authButton = b;
+                    }
                 }
                 else if(v is ViewGroup)
                 {
