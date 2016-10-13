@@ -1,0 +1,7 @@
+# cpan
+> install Mojolicious
+> install Mojolicious::Lite
+> install OAuth::Lite
+> install OAuth::Lite::Consumer
+# ???
+# cpan Mojolicious
