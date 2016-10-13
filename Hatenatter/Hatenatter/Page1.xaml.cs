@@ -1,21 +1,39 @@
-﻿using System;
+﻿using Acr.UserDialogs;
+using AsyncOAuth;
+using Hatena;
+using Hatenatter.Modles;
+using Java.Lang;
+using Newtonsoft.Json;
+using PCLCrypto;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Headers;
+//using System.Security.Cryptography;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
+using Xamarin.Auth;
 using Xamarin.Forms;
 
 namespace Hatenatter
 {
+    
     public partial class Page1 : ContentPage
     {
         Random m_random = new Random();
-        
+        public UserViewModel m_myInfo { get; set; }
 
         public Page1()
         {
             InitializeComponent();
+
+            // 
+            m_myInfo = new UserViewModel { Id = "unknown", DisplayName = "unknown", Image = "" };
+            MyUserLayout.BindingContext = m_myInfo;
 
             // Make data list
             List<ItemInfo> list = new List<ItemInfo>();
@@ -45,37 +63,124 @@ namespace Hatenatter
             );
 
             // Bind
-            this.BindingContext = list;
+            //this.BindingContext = list;
+            MyList.BindingContext = list;
+        }
+
+        int m_n = 0;
+        private async void PinButton_Clicked(object sender, EventArgs e)
+        {
+            //var result = await UserDialogs.Instance.PromptAsync("ENTER PIN", inputType: InputType.Default);
+
+            //await DisplayAlert("Title", "result = " + result.Text, "OK");
+            for(int i = 0; i < 3; i++)
+            {
+                m_n++;
+                LoginLabel.Text = "TEST" + m_n;
+                await Task.Delay(500);
+                m_myInfo.DisplayName = "TEST" + m_n;
+                await Task.Delay(500);
+            }
+            Debug.WriteLine("=================THREAD_ID = " + Thread.CurrentThread().Id);
         }
 
         private async void AuthButton_Clicked(object sender, EventArgs e)
         {
-            // DisplayAlert("Title", "Message", "OK");
-            // OAuth
-            int result = await StartAuth();
-            await DisplayAlert("Title", "result=" + result, "OK");
+            AuthButton.IsEnabled = false;
+
+            // ログイン
+            string result = await StartAuth();
+
+            // JSONパース
+            // {"profile_image_url":"http://cdn1......gif?111111", "url_name":"kobake", "display_name": "kobake"}
+            try
+            {
+                Dictionary<string, string> mymap = JsonConvert.DeserializeObject<Dictionary<string, string>>(result);
+                m_myInfo.Id = mymap["url_name"];
+                m_myInfo.DisplayName = mymap["display_name"];
+                m_myInfo.Image = mymap["profile_image_url"];
+            }
+            catch(System.Exception ex)
+            {
+            }
+            Debug.WriteLine("=================THREAD_ID = " + Thread.CurrentThread().Id);
+
+            // 結果表示
+            await DisplayAlert("Title", "result = " + result, "OK");
+
+            AuthButton.IsEnabled = true;
         }
 
-        private async Task<int> StartAuth()
+        
+
+        /*
+        class HMACSHA1 : IDisposable
         {
-            
-            var httpClient = new HttpClient(); // Xamarin supports HttpClient!
+            public HMACSHA1(byte[] b) { }
+            public byte[] ComputeHash(byte[] b) { return null; }
+            public void Dispose()
+            {
+            }
+        }
+        */
 
-            Task<string> contentsTask = httpClient.GetStringAsync("http://xamarin.com"); // async method!
+        // http://stackoverflow.com/questions/36700530/sha1-keyed-hash-with-hmac-in-xamarin-forms-pcl-c-equivalent-to-hash-hmac-in-ph
+        // .NET 4.6 以降であれば HMACSHA1 が使えるが、Xamarin だと 4.5 になってしまうので自前でやる
+        public static string hash_hmacSha1(string data, string key)
+        {
+            byte[] keyBytes = Encoding.UTF8.GetBytes(key);
+            byte[] dataBytes = Encoding.UTF8.GetBytes(data);
+            var algorithm = WinRTCrypto.MacAlgorithmProvider.OpenAlgorithm(MacAlgorithm.HmacSha1);
+            CryptographicHash hasher = algorithm.CreateHash(keyBytes);
+            hasher.Append(dataBytes);
+            byte[] mac = hasher.GetValueAndReset();
 
-            // await! control returns to the caller and the task continues to run on another thread
-            string contents = await contentsTask;
+            var sBuilder = new System.Text.StringBuilder();
+            for (int i = 0; i < mac.Length; i++)
+            {
+                sBuilder.Append(mac[i].ToString("X2"));
+            }
+            return sBuilder.ToString().ToLower();
+        }
+        public static byte[] hash_hmacSha1(byte[] dataBytes, byte[] keyBytes)
+        {
+            var algorithm = WinRTCrypto.MacAlgorithmProvider.OpenAlgorithm(MacAlgorithm.HmacSha1);
+            CryptographicHash hasher = algorithm.CreateHash(keyBytes);
+            hasher.Append(dataBytes);
+            byte[] mac = hasher.GetValueAndReset();
+            return mac;
+        }
 
-            TestLabel.Text += "DownloadHomepage method continues after async call. . . . .\n";
+        private async Task<string> StartAuth()
+        {
+            // initialize computehash function
+            OAuthUtility.ComputeHash = (key, buffer) =>
+            {
+                return hash_hmacSha1(buffer, key);
+            };
 
-            // After contentTask completes, you can calculate the length of the string.
-            int exampleInt = contents.Length;
+            try
+            {
+                var accessToken = await HatenaLogin.Authorize();
+                if (accessToken == null) throw new System.Exception("login error");
 
-            TestLabel.Text += "Downloaded the html and found out the length.\n\n\n";
+                var client = new HatenaClient(accessToken);
 
-            TestLabel.Text += contents; // just dump the entire HTML
+                var my = await client.GetMy();
+                Debug.WriteLine("my = " + my);
 
-            return exampleInt; // Task<TResult> returns an object of type TResult, in this case int
+                
+
+                return my;
+            }
+            catch (Java.Lang.Exception ex)
+            {
+                return "error: " + ex.Message;
+            }
+            catch (System.Exception ex)
+            {
+                return "error: " + ex.Message;
+            }
         }
     }
 }
