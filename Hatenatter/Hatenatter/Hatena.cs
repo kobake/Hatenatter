@@ -72,7 +72,10 @@ namespace Hatena
 
         public static void Cancel()
         {
-            m_verifier = "CANCEL";
+            if(m_verifier == "")
+            {
+                m_verifier = "CANCEL";
+            }
         }
     }
 

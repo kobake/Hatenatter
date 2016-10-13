@@ -1,29 +1,39 @@
 ﻿using Acr.UserDialogs;
 using AsyncOAuth;
 using Hatena;
+using Hatenatter.Modles;
+using Java.Lang;
+using Newtonsoft.Json;
 using PCLCrypto;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 //using System.Security.Cryptography;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Xamarin.Auth;
 using Xamarin.Forms;
 
 namespace Hatenatter
 {
+    
     public partial class Page1 : ContentPage
     {
         Random m_random = new Random();
-        
+        public UserViewModel m_myInfo { get; set; }
 
         public Page1()
         {
             InitializeComponent();
+
+            // 
+            m_myInfo = new UserViewModel { Id = "unknown", DisplayName = "unknown", Image = "" };
+            MyUserLayout.BindingContext = m_myInfo;
 
             // Make data list
             List<ItemInfo> list = new List<ItemInfo>();
@@ -53,21 +63,49 @@ namespace Hatenatter
             );
 
             // Bind
-            this.BindingContext = list;
+            //this.BindingContext = list;
+            MyList.BindingContext = list;
         }
 
+        int m_n = 0;
         private async void PinButton_Clicked(object sender, EventArgs e)
         {
-            var result = await UserDialogs.Instance.PromptAsync("ENTER PIN", inputType: InputType.Default);
+            //var result = await UserDialogs.Instance.PromptAsync("ENTER PIN", inputType: InputType.Default);
 
-            await DisplayAlert("Title", "result = " + result.Text, "OK");
+            //await DisplayAlert("Title", "result = " + result.Text, "OK");
+            for(int i = 0; i < 3; i++)
+            {
+                m_n++;
+                LoginLabel.Text = "TEST" + m_n;
+                await Task.Delay(500);
+                m_myInfo.DisplayName = "TEST" + m_n;
+                await Task.Delay(500);
+            }
+            Debug.WriteLine("=================THREAD_ID = " + Thread.CurrentThread().Id);
         }
 
         private async void AuthButton_Clicked(object sender, EventArgs e)
         {
             AuthButton.IsEnabled = false;
 
+            // ログイン
             string result = await StartAuth();
+
+            // JSONパース
+            // {"profile_image_url":"http://cdn1......gif?111111", "url_name":"kobake", "display_name": "kobake"}
+            try
+            {
+                Dictionary<string, string> mymap = JsonConvert.DeserializeObject<Dictionary<string, string>>(result);
+                m_myInfo.Id = mymap["url_name"];
+                m_myInfo.DisplayName = mymap["display_name"];
+                m_myInfo.Image = mymap["profile_image_url"];
+            }
+            catch(System.Exception ex)
+            {
+            }
+            Debug.WriteLine("=================THREAD_ID = " + Thread.CurrentThread().Id);
+
+            // 結果表示
             await DisplayAlert("Title", "result = " + result, "OK");
 
             AuthButton.IsEnabled = true;
@@ -97,7 +135,7 @@ namespace Hatenatter
             hasher.Append(dataBytes);
             byte[] mac = hasher.GetValueAndReset();
 
-            StringBuilder sBuilder = new StringBuilder();
+            var sBuilder = new System.Text.StringBuilder();
             for (int i = 0; i < mac.Length; i++)
             {
                 sBuilder.Append(mac[i].ToString("X2"));
@@ -115,105 +153,33 @@ namespace Hatenatter
 
         private async Task<string> StartAuth()
         {
-            if (true)
+            // initialize computehash function
+            OAuthUtility.ComputeHash = (key, buffer) =>
             {
-                // initialize computehash function
-                OAuthUtility.ComputeHash = (key, buffer) =>
-                {
-                    return hash_hmacSha1(buffer, key);
-                    /*
-                    using (var hmac = new HMACSHA1(key))
-                    {
-                        return hmac.ComputeHash(buffer);
-                    }
-                    */
-                };
+                return hash_hmacSha1(buffer, key);
+            };
 
-                try
-                {
-                    var accessToken = await HatenaLogin.Authorize();
-                    if (accessToken == null) throw new Exception("login error");
-
-                    var client = new HatenaClient(accessToken);
-
-                    var my = await client.GetMy();
-                    Debug.WriteLine("my = " + my);
-                    return my;
-                }
-                catch(Exception ex)
-                {
-                    return "error: " + ex.Message;
-                }
-            }
-            if (false)
+            try
             {
-                // https://components.xamarin.com/view/xamarin.auth
-                var auth = new OAuth2Authenticator(
-                    clientId: "OjrD3wav+EZbSw==",
-                    clientSecret: "yKV005kzISrG63/vk1l5mApZi8I=",
-                    scope: "read_public",
-                    authorizeUrl: new Uri("https://www.hatena.ne.jp/touch/oauth/authorize"),
-                    redirectUrl: new Uri("http://localhost"), //?
-                    accessTokenUrl: new Uri("https://www.hatena.com/oauth/token")
-                );
+                var accessToken = await HatenaLogin.Authorize();
+                if (accessToken == null) throw new System.Exception("login error");
 
-                auth.Completed += (sender, eventArgs) =>
-                {
-                    //DismissViewController(true, null);
-                    if (eventArgs.IsAuthenticated)
-                    {
-                        // Use eventArgs.Account to do wonderful things
-                    }
-                };
+                var client = new HatenaClient(accessToken);
 
-                //var intent = auth.get
+                var my = await client.GetMy();
+                Debug.WriteLine("my = " + my);
 
-                //PresentViewController(auth.GetUI(), true, null);
-                return "";
-            }
-
-            // RequestToken取得
-            if (false)
-            {
-                var client = new HttpClient();
-                string url = " https://www.hatena.com/oauth/initiate ";
-
-                // 共通ヘッダ設定
-                // http://stackoverflow.com/questions/14627399/setting-authorization-header-of-httpclient
-                // http://stackoverflow.com/questions/19039450/adding-authorization-to-the-headers
-                //client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", "Your Oauth token");
-                //var headers = new AuthenticationHeaderValue("Bearer", "Your Oauth token");
-                //headers.
-                //client.DefaultRequestHeaders.Authorization = headers;
-                //client.DefaultRequestHeaders.Add("Authorization", "");
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("");
-
-                // 送信データ
-                var content = new StringContent("scope=read_public");
                 
-                await client.PostAsync(url, content);
+
+                return my;
             }
-
-            // 通信サンプル
-            if (false)
+            catch (Java.Lang.Exception ex)
             {
-                var httpClient = new HttpClient(); // Xamarin supports HttpClient!
-
-                Task<string> contentsTask = httpClient.GetStringAsync("http://xamarin.com"); // async method!
-
-                // await! control returns to the caller and the task continues to run on another thread
-                string contents = await contentsTask;
-
-                TestLabel.Text += "DownloadHomepage method continues after async call. . . . .\n";
-
-                // After contentTask completes, you can calculate the length of the string.
-                int exampleInt = contents.Length;
-
-                TestLabel.Text += "Downloaded the html and found out the length.\n\n\n";
-
-                TestLabel.Text += contents; // just dump the entire HTML
-
-                return exampleInt + ""; // Task<TResult> returns an object of type TResult, in this case int
+                return "error: " + ex.Message;
+            }
+            catch (System.Exception ex)
+            {
+                return "error: " + ex.Message;
             }
         }
     }

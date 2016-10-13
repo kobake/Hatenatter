@@ -5,12 +5,39 @@
     "State": "てすと"
   },
 
-  "Page1.xaml": [
-		{ "Image": "http://cdn1.www.st-hatena.com/users/ko/kobake/profile_l.gif", "Name": "kobake", "State": "こんにちは" },
-		{ "Image": "http://cdn1.www.st-hatena.com/users/ko/kobake/profile_l.gif", "Name": "kobake", "State": "こんにちは" },
-		{ "Image": "http://cdn1.www.st-hatena.com/users/ko/kobake/profile_l.gif", "Name": "kobake", "State": "こんにちは" },
-		{ "Image": "http://cdn1.www.st-hatena.com/users/ko/kobake/profile_l.gif", "Name": "kobake", "State": "こんにちは" },
-		{ "Image": "http://cdn1.www.st-hatena.com/users/ko/kobake/profile_l.gif", "Name": "kobake", "State": "こんにちは" }
-	]
+  "Page1.xaml": {
+    "MyUserData": {
+      "Image": "http://cdn1.www.st-hatena.com/users/ko/kobake/profile_l.gif",
+      "DisplayName": "こばやん",
+      "Id": "kobake"
+    },
+    "MyListData": [
+      {
+        "Image": "http://cdn1.www.st-hatena.com/users/ko/kobake/profile_l.gif",
+        "Name": "kobake",
+        "State": "こんにちは"
+      },
+      {
+        "Image": "http://cdn1.www.st-hatena.com/users/ko/kobake/profile_l.gif",
+        "Name": "kobake",
+        "State": "こんにちは"
+      },
+      {
+        "Image": "http://cdn1.www.st-hatena.com/users/ko/kobake/profile_l.gif",
+        "Name": "kobake",
+        "State": "こんにちは"
+      },
+      {
+        "Image": "http://cdn1.www.st-hatena.com/users/ko/kobake/profile_l.gif",
+        "Name": "kobake",
+        "State": "こんにちは"
+      },
+      {
+        "Image": "http://cdn1.www.st-hatena.com/users/ko/kobake/profile_l.gif",
+        "Name": "kobake",
+        "State": "こんにちは"
+      }
+    ]
+  }
 
 }
