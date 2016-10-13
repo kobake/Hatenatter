@@ -13,10 +13,33 @@ using Android.Util;
 using Acr.UserDialogs;
 using Xamarin.Forms.Platform.Android;
 using Xamarin.Forms;
+using Android.Content;
 
 namespace Hatenatter.Droid
 {
-    [Activity(Label = "Hatenatter", Icon = "@drawable/icon", Theme = "@style/MainTheme", MainLauncher = true, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation)]
+    [
+        Activity(
+            Label = "Hatenatter",
+            Icon = "@drawable/icon",
+            Theme = "@style/MainTheme",
+            MainLauncher = true,
+            ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation
+        )
+    ]
+    [
+        IntentFilter(
+            new[] { Intent.ActionView },
+            Categories = new[] { Intent.CategoryDefault, Intent.CategoryBrowsable },
+            DataScheme = "hatenatter",
+            DataHost = "main"
+        )
+    ]
+    //<intent-filter>
+    //  <action android:name="android.intent.action.VIEW" />
+    //  <category android:name="android.intent.category.DEFAULT" />
+    //  <category android:name="android.intent.category.BROWSABLE"/>
+    //  <data android:scheme="myapp" android:host="simple" />
+    //</intent-filter>
     public class MainActivity : FormsAppCompatActivity
     {
         private Android.Widget.Button m_authButton;
