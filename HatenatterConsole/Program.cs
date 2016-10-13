@@ -26,7 +26,7 @@ namespace HatenatterConsole
             OAuthUtility.ComputeHash = (key, buffer) => { using (var hmac = new HMACSHA1(key)) { return hmac.ComputeHash(buffer); } };
 
             // sample, twitter access flow
-            var accessToken = await HatenaClient.AuthorizeSample(consumerKey, consumerSecret);
+            var accessToken = await HatenaClient.AuthorizeSampleRedirect(consumerKey, consumerSecret);
 
             var client = new HatenaClient(consumerKey, consumerSecret, accessToken);
 
