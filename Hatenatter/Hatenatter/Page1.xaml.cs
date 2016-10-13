@@ -50,13 +50,13 @@ namespace Hatenatter
             this.BindingContext = list;
         }
 
-        private void AuthButton_Clicked(object sender, EventArgs e)
+        private async void AuthButton_Clicked(object sender, EventArgs e)
         {
             // DisplayAlert("Title", "Message", "OK");
             // OAuth
             //int result = await StartAuth();
-            //await DisplayAlert("Title", "result=" + result, "OK");
-            System.Diagnostics.Debug.WriteLine("========== AuthButton_Clicked");
+            await DisplayAlert("Title", "result", "OK");
+            //System.Diagnostics.Debug.WriteLine("========== AuthButton_Clicked");
         }
 
 

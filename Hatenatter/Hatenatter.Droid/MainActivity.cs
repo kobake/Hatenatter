@@ -33,12 +33,14 @@ namespace Hatenatter.Droid
             scanChildren(content);
             if(m_authButton != null)
             {
+                /*
                 m_authButton.Click += delegate
                 {
                     Android.Util.Log.Info("TEST", "===== Android Button Start.");
-                    LoginToFacebook(true);
+                    //LoginToFacebook(true);
                     Android.Util.Log.Info("TEST", "===== Android Button End.");
                 };
+                */
             }
 
             Log.Info("TEST", "============= Class.Package.Name = " + this.Class.Package.Name); // "md5342ced9ef53c8f94896788778571b378"
