@@ -1,8 +1,13 @@
-﻿using System;
+﻿using AsyncOAuth;
+using HatenatterConsole;
+using PCLCrypto;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
+//using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using Xamarin.Auth;
@@ -59,12 +64,73 @@ namespace Hatenatter
             //System.Diagnostics.Debug.WriteLine("========== AuthButton_Clicked");
         }
 
+        // set your token
+        const string consumerKey = "OjrD3wav+EZbSw==";
+        const string consumerSecret = "yKV005kzISrG63/vk1l5mApZi8I=";
+
+        /*
+        class HMACSHA1 : IDisposable
+        {
+            public HMACSHA1(byte[] b) { }
+            public byte[] ComputeHash(byte[] b) { return null; }
+            public void Dispose()
+            {
+            }
+        }
+        */
+
+        // http://stackoverflow.com/questions/36700530/sha1-keyed-hash-with-hmac-in-xamarin-forms-pcl-c-equivalent-to-hash-hmac-in-ph
+        // .NET 4.6 以降であれば HMACSHA1 が使えるが、Xamarin だと 4.5 になってしまうので自前でやる
+        public static string hash_hmacSha1(string data, string key)
+        {
+            byte[] keyBytes = Encoding.UTF8.GetBytes(key);
+            byte[] dataBytes = Encoding.UTF8.GetBytes(data);
+            var algorithm = WinRTCrypto.MacAlgorithmProvider.OpenAlgorithm(MacAlgorithm.HmacSha1);
+            CryptographicHash hasher = algorithm.CreateHash(keyBytes);
+            hasher.Append(dataBytes);
+            byte[] mac = hasher.GetValueAndReset();
+
+            StringBuilder sBuilder = new StringBuilder();
+            for (int i = 0; i < mac.Length; i++)
+            {
+                sBuilder.Append(mac[i].ToString("X2"));
+            }
+            return sBuilder.ToString().ToLower();
+        }
+        public static byte[] hash_hmacSha1(byte[] dataBytes, byte[] keyBytes)
+        {
+            var algorithm = WinRTCrypto.MacAlgorithmProvider.OpenAlgorithm(MacAlgorithm.HmacSha1);
+            CryptographicHash hasher = algorithm.CreateHash(keyBytes);
+            hasher.Append(dataBytes);
+            byte[] mac = hasher.GetValueAndReset();
+            return mac;
+        }
 
         private async Task<int> StartAuth()
         {
             if (true)
             {
+                // initialize computehash function
+                OAuthUtility.ComputeHash = (key, buffer) =>
+                {
+                    return hash_hmacSha1(buffer, key);
+                    /*
+                    using (var hmac = new HMACSHA1(key))
+                    {
+                        return hmac.ComputeHash(buffer);
+                    }
+                    */
+                };
 
+                // sample, twitter access flow
+                var accessToken = await HatenaClient.AuthorizeSample(consumerKey, consumerSecret);
+
+                var client = new HatenaClient(consumerKey, consumerSecret, accessToken);
+
+                //var tl = await client.GetTimeline(10, 1);
+                //Console.WriteLine(tl);
+                var my = await client.GetMy();
+                Debug.WriteLine("my = " + my);
                 return 0;
             }
             if (false)
