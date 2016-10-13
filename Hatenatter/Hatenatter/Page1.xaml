@@ -7,6 +7,7 @@
   <StackLayout VerticalOptions="Start">
     <Button x:Name="AuthButton" Text="Auth" Clicked="AuthButton_Clicked" />
     <Label x:Name="TestLabel" Text="Hello" Margin="15,10,10,10" />
+    <Button x:Name="PinButton" Text="PIN" Clicked="PinButton_Clicked" />
 
 
     <ListView x:Name="mylist" ItemsSource="{Binding}" VerticalOptions="FillAndExpand" HasUnevenRows="True">

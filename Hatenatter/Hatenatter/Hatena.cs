@@ -39,6 +39,9 @@ namespace HatenatterConsole
                 },
                 new FormUrlEncodedContent(new[] { new KeyValuePair<string, string>("scope", "read_public") }));
             var requestToken = tokenResponse.Token;
+            Debug.WriteLine("=======================");
+            Debug.WriteLine("requestToken = " + tokenResponse.Token);
+            Debug.WriteLine("=======================");
 
             var pinRequestUrl = authorizer.BuildAuthorizeUrl("https://www.hatena.ne.jp/touch/oauth/authorize", requestToken);
 

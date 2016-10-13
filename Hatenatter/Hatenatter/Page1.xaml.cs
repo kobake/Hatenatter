@@ -1,4 +1,5 @@
-﻿using AsyncOAuth;
+﻿using Acr.UserDialogs;
+using AsyncOAuth;
 using HatenatterConsole;
 using PCLCrypto;
 using System;
@@ -53,6 +54,13 @@ namespace Hatenatter
 
             // Bind
             this.BindingContext = list;
+        }
+
+        private async void PinButton_Clicked(object sender, EventArgs e)
+        {
+            var result = await UserDialogs.Instance.PromptAsync("ENTER PIN", inputType: InputType.Default);
+
+            await DisplayAlert("Title", "result = " + result.Text, "OK");
         }
 
         private async void AuthButton_Clicked(object sender, EventArgs e)
