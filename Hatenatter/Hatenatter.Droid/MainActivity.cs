@@ -14,6 +14,7 @@ using Acr.UserDialogs;
 using Xamarin.Forms.Platform.Android;
 using Xamarin.Forms;
 using Android.Content;
+using Hatena;
 
 namespace Hatenatter.Droid
 {
@@ -48,21 +49,23 @@ namespace Hatenatter.Droid
         {
             base.OnResume();
 
-            string p = Intent.GetStringExtra("aa");
-            Log.Info("TEST", "=================== aa1 = " + p);
-
             Log.Info("TEST", "================RESTORE=======================");
+            string verifier = "";
             if (Intent.ActionView.Equals(Intent.Action))
             {
                 Android.Net.Uri uri = Intent.Data;
                 if (uri != null)
                 {
-                    Log.Info("TEST", uri.ToString());
-                    Log.Info("TEST", uri.Query);
-                    Log.Info("TEST", string.Join(", ", uri.QueryParameterNames));
-                    string aa = uri.GetQueryParameter("aa");
-                    Log.Info("TEST", aa);
+                    verifier = uri.GetQueryParameter("oauth_verifier");
                 }
+            }
+            if (string.IsNullOrEmpty(verifier))
+            {
+                HatenaLogin.Cancel();
+            }
+            else
+            {
+                HatenaLogin.OnGotVerifier(verifier);
             }
             Log.Info("TEST", "=============================================");
         }

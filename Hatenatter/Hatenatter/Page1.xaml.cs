@@ -1,6 +1,6 @@
 ﻿using Acr.UserDialogs;
 using AsyncOAuth;
-using HatenatterConsole;
+using Hatena;
 using PCLCrypto;
 using System;
 using System.Collections.Generic;
@@ -65,16 +65,15 @@ namespace Hatenatter
 
         private async void AuthButton_Clicked(object sender, EventArgs e)
         {
-            // DisplayAlert("Title", "Message", "OK");
-            // OAuth
-            int result = await StartAuth();
-            await DisplayAlert("Title", "result", "OK");
-            //System.Diagnostics.Debug.WriteLine("========== AuthButton_Clicked");
+            AuthButton.IsEnabled = false;
+
+            string result = await StartAuth();
+            await DisplayAlert("Title", "result = " + result, "OK");
+
+            AuthButton.IsEnabled = true;
         }
 
-        // set your token
-        const string consumerKey = "OjrD3wav+EZbSw==";
-        const string consumerSecret = "yKV005kzISrG63/vk1l5mApZi8I=";
+        
 
         /*
         class HMACSHA1 : IDisposable
@@ -114,7 +113,7 @@ namespace Hatenatter
             return mac;
         }
 
-        private async Task<int> StartAuth()
+        private async Task<string> StartAuth()
         {
             if (true)
             {
@@ -130,16 +129,21 @@ namespace Hatenatter
                     */
                 };
 
-                // sample, twitter access flow
-                var accessToken = await HatenaClient.AuthorizeSample(consumerKey, consumerSecret);
+                try
+                {
+                    var accessToken = await HatenaLogin.Authorize();
+                    if (accessToken == null) throw new Exception("login error");
 
-                var client = new HatenaClient(consumerKey, consumerSecret, accessToken);
+                    var client = new HatenaClient(accessToken);
 
-                //var tl = await client.GetTimeline(10, 1);
-                //Console.WriteLine(tl);
-                var my = await client.GetMy();
-                Debug.WriteLine("my = " + my);
-                return 0;
+                    var my = await client.GetMy();
+                    Debug.WriteLine("my = " + my);
+                    return my;
+                }
+                catch(Exception ex)
+                {
+                    return "error: " + ex.Message;
+                }
             }
             if (false)
             {
@@ -165,7 +169,7 @@ namespace Hatenatter
                 //var intent = auth.get
 
                 //PresentViewController(auth.GetUI(), true, null);
-                return 0;
+                return "";
             }
 
             // RequestToken取得
@@ -209,7 +213,7 @@ namespace Hatenatter
 
                 TestLabel.Text += contents; // just dump the entire HTML
 
-                return exampleInt; // Task<TResult> returns an object of type TResult, in this case int
+                return exampleInt + ""; // Task<TResult> returns an object of type TResult, in this case int
             }
         }
     }

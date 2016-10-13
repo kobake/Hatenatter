@@ -9,61 +9,53 @@ using System.Text;
 using System.Threading.Tasks;
 using Xamarin.Forms;
 
-namespace HatenatterConsole
+namespace Hatena
 {
-    // a sample of hatena client
-    public class HatenaClient
+    public class HatenaConfig
     {
-        readonly string consumerKey;
-        readonly string consumerSecret;
-        readonly AccessToken accessToken;
+        public const string CONSUMER_KEY = "OjrD3wav+EZbSw==";
+        public const string CONSUMER_SECRET = "yKV005kzISrG63/vk1l5mApZi8I=";
+    }
 
-        public HatenaClient(string consumerKey, string consumerSecret, AccessToken accessToken)
-        {
-            this.consumerKey = consumerKey;
-            this.consumerSecret = consumerSecret;
-            this.accessToken = accessToken;
-        }
-        
+    public class HatenaLogin
+    {
+        private static string m_verifier = "";
         // sample flow for Hatena authroize
-        public async static Task<AccessToken> AuthorizeSample(string consumerKey, string consumerSecret)
+        public static async Task<AccessToken> Authorize()
         {
-            // create authorizer
-            var authorizer = new OAuthAuthorizer(consumerKey, consumerSecret);
+            m_verifier = "";
 
+            var authorizer = new OAuthAuthorizer(HatenaConfig.CONSUMER_KEY, HatenaConfig.CONSUMER_SECRET);
             // get request token
             var tokenResponse = await authorizer.GetRequestToken(
                 "https://www.hatena.com/oauth/initiate",
-                new[] {
-                    new KeyValuePair<string, string>("oauth_callback", "oob")
-                    //new KeyValuePair<string, string>("oauth_callback", "http://dev.clock-up.jp/redirect_to_app.php")
-                },
+                new[] { new KeyValuePair<string, string>("oauth_callback", "http://dev.clock-up.jp/redirect_to_app.php") },
                 new FormUrlEncodedContent(new[] { new KeyValuePair<string, string>("scope", "read_public") }));
             var requestToken = tokenResponse.Token;
-            Debug.WriteLine("=======================");
-            Debug.WriteLine("requestToken = " + tokenResponse.Token);
-            Debug.WriteLine("=======================");
-
-            var pinRequestUrl = authorizer.BuildAuthorizeUrl("https://www.hatena.ne.jp/touch/oauth/authorize", requestToken);
-
-            // open browser and get PIN Code
+            
+            // ブラウザ起動
+            var pinRequestUrl = authorizer.BuildAuthorizeUrl("https://www.hatena.ne.jp/oauth/authorize", requestToken);
             Device.OpenUri(new Uri(pinRequestUrl));
-            //Process.Start(pinRequestUrl);
 
-            // enter pin
-            // Debug.WriteLine("ENTER PIN");
+            // 認証が成功すると、
+            // http://dev.clock-up.jp/redirect_to_app.php?oauth_token=LjjaOIMY8fXTAA%3D%3D&oauth_verifier=77EbWdvM9KWG1Tjct%2FphLI%2Fp
+            // のようなページが表示される。結果、アプリに呼び戻される
 
-            var result = await UserDialogs.Instance.PromptAsync("ENTER PIN", inputType: InputType.Default);
-            // await Task.Delay(500);
-            var pinCode = "";// Console.ReadLine();
-            if (result.Ok)
+            // verifier が来るまで待つ
+            while (true)
             {
-                pinCode = result.Text;
+                if(m_verifier == "CANCEL")
+                {
+                    return null;
+                }
+                if(m_verifier != "")
+                {
+                    break;
+                }
+                await Task.Delay(500);
             }
-
-            // get access token
-            var accessTokenResponse = await authorizer.GetAccessToken("https://www.hatena.com/oauth/token", requestToken, pinCode);
-
+            var accessTokenResponse = await authorizer.GetAccessToken("https://www.hatena.com/oauth/token", requestToken, m_verifier);
+            
             // save access token.
             var accessToken = accessTokenResponse.Token;
             Debug.WriteLine("Key:" + accessToken.Key);
@@ -72,9 +64,31 @@ namespace HatenatterConsole
             return accessToken;
         }
 
+        // Androidからの通知
+        public static void OnGotVerifier(string verifier)
+        {
+            m_verifier = verifier;
+        }
+
+        public static void Cancel()
+        {
+            m_verifier = "CANCEL";
+        }
+    }
+
+    // a sample of hatena client
+    public class HatenaClient
+    {
+        AccessToken accessToken = null;
+
+        public HatenaClient(AccessToken accessToken)
+        {
+            this.accessToken = accessToken;
+        }
+
         HttpClient CreateOAuthClient()
         {
-            return OAuthUtility.CreateOAuthClient(consumerKey, consumerSecret, accessToken);
+            return OAuthUtility.CreateOAuthClient(HatenaConfig.CONSUMER_KEY, HatenaConfig.CONSUMER_SECRET, accessToken);
         }
 
         public async Task<string> GetMy()
