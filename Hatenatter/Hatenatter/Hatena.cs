@@ -36,6 +36,7 @@ namespace HatenatterConsole
                 "https://www.hatena.com/oauth/initiate",
                 new[] {
                     new KeyValuePair<string, string>("oauth_callback", "oob")
+                    //new KeyValuePair<string, string>("oauth_callback", "http://dev.clock-up.jp/redirect_to_app.php")
                 },
                 new FormUrlEncodedContent(new[] { new KeyValuePair<string, string>("scope", "read_public") }));
             var requestToken = tokenResponse.Token;
