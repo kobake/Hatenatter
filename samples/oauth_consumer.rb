@@ -9,8 +9,8 @@ enable :sessions
 
 before do
   @consumer = OAuth::Consumer.new(
-    'YOUR_CONSUMER_KEY',
-    'YOUR_CONSUMER_SECRET',
+    'OjrD3wav+EZbSw==',
+    'yKV005kzISrG63/vk1l5mApZi8I=',
     :site               => '',
     :request_token_path => 'https://www.hatena.com/oauth/initiate',
     :access_token_path  => 'https://www.hatena.com/oauth/token',
