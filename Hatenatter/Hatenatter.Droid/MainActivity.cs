@@ -10,13 +10,16 @@ using Xamarin.Auth;
 using System.Json;
 using System.Threading.Tasks;
 using Android.Util;
+using Acr.UserDialogs;
+using Xamarin.Forms.Platform.Android;
+using Xamarin.Forms;
 
 namespace Hatenatter.Droid
 {
     [Activity(Label = "Hatenatter", Icon = "@drawable/icon", Theme = "@style/MainTheme", MainLauncher = true, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation)]
-    public class MainActivity : global::Xamarin.Forms.Platform.Android.FormsAppCompatActivity
+    public class MainActivity : FormsAppCompatActivity
     {
-        private Button m_authButton;
+        private Android.Widget.Button m_authButton;
 
         protected override void OnCreate(Bundle bundle)
         {
@@ -25,7 +28,9 @@ namespace Hatenatter.Droid
 
             base.OnCreate(bundle);
 
-            global::Xamarin.Forms.Forms.Init(this, bundle);
+            Forms.Init(this, bundle);
+
+            UserDialogs.Init(this); // Dialogs初期化
             LoadApplication(new App());
 
             // Text="Auth" な Button を探す -> m_authButton
@@ -54,10 +59,10 @@ namespace Hatenatter.Droid
         {
             for (int i = 0; i < viewGroup.ChildCount; i++)
             {
-                View v = viewGroup.GetChildAt(i);
-                if (v is Button)
+                Android.Views.View v = viewGroup.GetChildAt(i);
+                if (v is Android.Widget.Button)
                 {
-                    var b = v as Button;
+                    var b = v as Android.Widget.Button;
                     Android.Util.Log.Info("TEST", "Button!!" + b.Text);
                     m_authButton = b;
                 }
