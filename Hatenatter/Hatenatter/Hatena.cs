@@ -34,7 +34,7 @@ namespace Hatena
             var requestToken = tokenResponse.Token;
             
             // ブラウザ起動
-            var pinRequestUrl = authorizer.BuildAuthorizeUrl("https://www.hatena.ne.jp/oauth/authorize", requestToken);
+            var pinRequestUrl = authorizer.BuildAuthorizeUrl("https://www.hatena.ne.jp/touch/oauth/authorize", requestToken);
             Device.OpenUri(new Uri(pinRequestUrl));
 
             // 認証が成功すると、
