@@ -4,10 +4,10 @@
              x:Class="Hatenatter.MyListItemView">
   <ContentView.Content>
     <StackLayout Orientation="Horizontal" Padding="10" VerticalOptions="Start">
-      <Image Source="{Binding Image}" WidthRequest="50" VerticalOptions="Start" />
+      <Image Source="{Binding Comment.UserImage}" WidthRequest="50" VerticalOptions="Start" />
       <StackLayout Orientation="Vertical" Padding="10, 0, 0, 0">
-        <Label Text="{Binding Name}" />
-        <Label Text="{Binding State}" />
+        <Label Text="{Binding Comment.UserId}" />
+        <Label Text="{Binding Comment.Comment}" />
       </StackLayout>
     </StackLayout>
   </ContentView.Content>

@@ -1,6 +1,7 @@
 ﻿using Acr.UserDialogs;
 using AsyncOAuth;
 using Hatena;
+using Hatenatter.Models;
 using Hatenatter.Modles;
 //using Java.Lang;
 using Newtonsoft.Json;
@@ -40,27 +41,42 @@ namespace Hatenatter
             // Make data list
             m_list = new ListViewModel();
             m_list.Add(
-                new ItemInfo
+                new TimelineItem
                 {
-                    Image = "https://avatars0.githubusercontent.com/u/20608487?v=3&s=200",
-                    Name = "John",
-                    State = "Hello"
+                    ArticleName = "記事",
+                    ArticleUrl = "http://",
+                    Comment = new HatenaComment
+                    {
+                        UserId = "xevra",
+                        Comment = "Hello",
+                        Date = "2015/1/1",
+                    }
                 }
             );
             m_list.Add(
-                new ItemInfo
+                new TimelineItem
                 {
-                    Image = "https://avatars0.githubusercontent.com/u/20608487?v=3&s=200",
-                    Name = "Kei",
-                    State = "Hello"
+                    ArticleName = "記事",
+                    ArticleUrl = "http://",
+                    Comment = new HatenaComment
+                    {
+                        UserId = "kobake",
+                        Comment = "Hello",
+                        Date = "2015/1/1",
+                    }
                 }
             );
             m_list.Add(
-                new ItemInfo
+                new TimelineItem
                 {
-                    Image = "https://avatars0.githubusercontent.com/u/20608487?v=3&s=200",
-                    Name = "Tama",
-                    State = "Hello"
+                    ArticleName = "記事",
+                    ArticleUrl = "http://",
+                    Comment = new HatenaComment
+                    {
+                        UserId = "kobake",
+                        Comment = "Hello",
+                        Date = "2015/1/1",
+                    }
                 }
             );
 
@@ -93,6 +109,17 @@ namespace Hatenatter
             // タイムライン更新
             RefreshButton.IsEnabled = false;
             await Task.Delay(1500);
+            m_list.Add(new TimelineItem
+            {
+                ArticleName = "記事",
+                ArticleUrl = "http://",
+                Comment = new HatenaComment
+                {
+                    UserId = "feita",
+                    Comment = "Hello",
+                    Date = "2015/3/1",
+                }
+            });
             RefreshButton.IsEnabled = true;
         }
 

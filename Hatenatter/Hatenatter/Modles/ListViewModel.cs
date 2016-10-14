@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Hatenatter.Models;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
@@ -9,6 +10,7 @@ using System.Threading.Tasks;
 
 namespace Hatenatter.Modles
 {
+    /*
     public class ItemInfo : INotifyPropertyChanged
     {
         public string Image { get; set; }
@@ -26,12 +28,13 @@ namespace Hatenatter.Modles
             }
         }
     }
+    */
 
     // http://ytabuchi.hatenablog.com/entry/2015/08/12/010522
     public class ListViewModel : INotifyCollectionChanged
     {
         //List<ItemInfo> list = new List<ItemInfo>();
-        ObservableCollection<ItemInfo> list = new ObservableCollection<ItemInfo>();
+        ObservableCollection<TimelineItem> list = new ObservableCollection<TimelineItem>();
         /*
         list.Add(
                 new ItemInfo
@@ -42,7 +45,7 @@ namespace Hatenatter.Modles
                 }
             );
         */
-        public ObservableCollection<ItemInfo> MyListData
+        public ObservableCollection<TimelineItem> MyListData
         {
             get
             {
@@ -58,7 +61,7 @@ namespace Hatenatter.Modles
             }
         }
 
-        public void Add(ItemInfo item)
+        public void Add(TimelineItem item)
         {
             list.Add(item);
             //OnPropertyChanged("MyListData"); // これやんなくてもObservableCollectionなので自動的に反映される
@@ -67,7 +70,7 @@ namespace Hatenatter.Modles
         //### こういう変更は見た目に適用されないっぽ…？
         public void Change(string t)
         {
-            list[0].Name = t;
+            list[0].Comment.UserId = t;
             OnPropertyChanged("MyListData");
         }
 

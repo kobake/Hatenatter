@@ -1,8 +1,13 @@
 ﻿{
   "MyListItemView.xaml": {
-    "Image": "http://cdn1.www.st-hatena.com/users/ko/kobake/profile_l.gif",
-    "Name": "kobake",
-    "State": "てすと"
+    "ArticleName": "記事",
+    "ArticleUrl": "http://aaa",
+    "BookmarkCount": 10,
+    "Comment": {
+      "UserImage": "http://cdn1.www.st-hatena.com/users/ko/kobake/profile_l.gif",
+      "UserId": "kobake",
+      "Comment": "こんにちは"
+    }
   },
 
   "Page1.xaml": {
@@ -13,31 +18,36 @@
     },
     "MyListData": [
       {
-        "Image": "http://cdn1.www.st-hatena.com/users/ko/kobake/profile_l.gif",
-        "Name": "kobake",
-        "State": "こんにちは"
+        "ArticleName": "記事",
+        "ArticleUrl": "http://aaa",
+        "BookmarkCount": 10,
+        "Comment": {
+          "UserImage": "http://cdn1.www.st-hatena.com/users/ko/kobake/profile_l.gif",
+          "UserId": "kobake",
+          "Comment": "こんにちは"
+        }
       },
       {
-        "Image": "http://cdn1.www.st-hatena.com/users/ko/kobake/profile_l.gif",
-        "Name": "kobake",
-        "State": "こんにちは"
+        "ArticleName": "記事",
+        "ArticleUrl": "http://aaa",
+        "BookmarkCount": 10,
+        "Comment": {
+          "UserImage": "http://cdn1.www.st-hatena.com/users/ko/kobake/profile_l.gif",
+          "UserId": "kobake",
+          "Comment": "こんにちは"
+        }
       },
       {
-        "Image": "http://cdn1.www.st-hatena.com/users/ko/kobake/profile_l.gif",
-        "Name": "kobake",
-        "State": "こんにちは"
-      },
-      {
-        "Image": "http://cdn1.www.st-hatena.com/users/ko/kobake/profile_l.gif",
-        "Name": "kobake",
-        "State": "こんにちは"
-      },
-      {
-        "Image": "http://cdn1.www.st-hatena.com/users/ko/kobake/profile_l.gif",
-        "Name": "kobake",
-        "State": "こんにちは"
+        "ArticleName": "記事",
+        "ArticleUrl": "http://aaa",
+        "BookmarkCount": 10,
+        "Comment": {
+          "UserImage": "http://cdn1.www.st-hatena.com/users/ko/kobake/profile_l.gif",
+          "UserId": "kobake",
+          "Comment": "こんにちは"
+        }
       }
+
     ]
   }
-
 }
