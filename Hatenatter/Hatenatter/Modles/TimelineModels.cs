@@ -17,6 +17,7 @@ namespace Hatenatter.Models
         {
             get
             {
+                if (UserId.Length < 2) return "";
                 return $"http://cdn1.www.st-hatena.com/users/{UserId.Substring(0, 2)}/{UserId}/profile.gif";
             }
         }

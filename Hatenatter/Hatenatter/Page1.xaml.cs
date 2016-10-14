@@ -49,38 +49,13 @@ namespace Hatenatter
                     ArticleUrl = "http://",
                     Comment = new HatenaComment
                     {
-                        UserId = "xevra",
-                        Comment = "Hello",
-                        Date = "2015/1/1",
+                        UserId = "",
+                        Comment = "ログインしてください",
+                        Date = "",
                     }
                 }
             );
-            m_list.Add(
-                new TimelineItem
-                {
-                    ArticleName = "記事",
-                    ArticleUrl = "http://",
-                    Comment = new HatenaComment
-                    {
-                        UserId = "kobake",
-                        Comment = "Hello",
-                        Date = "2015/1/1",
-                    }
-                }
-            );
-            m_list.Add(
-                new TimelineItem
-                {
-                    ArticleName = "記事",
-                    ArticleUrl = "http://",
-                    Comment = new HatenaComment
-                    {
-                        UserId = "kobake",
-                        Comment = "Hello",
-                        Date = "2015/1/1",
-                    }
-                }
-            );
+            
 
             // Bind
             //this.BindingContext = m_list;
