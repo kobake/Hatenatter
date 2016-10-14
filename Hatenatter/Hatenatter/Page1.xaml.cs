@@ -95,7 +95,7 @@ namespace Hatenatter
 
             // ローディング表示
             var config = new ProgressDialogConfig()
-                .SetTitle("Loading...")
+                .SetTitle("Load Timeline ...")
                 .SetIsDeterministic(false)
                 .SetMaskType(MaskType.Black);
             string error = "";
@@ -146,7 +146,7 @@ namespace Hatenatter
 
             // ローディング表示
             var config = new ProgressDialogConfig()
-                .SetTitle("Login...")
+                .SetTitle("Login ...")
                 .SetIsDeterministic(false)
                 .SetMaskType(MaskType.Black);
             string error = "";
@@ -185,13 +185,13 @@ namespace Hatenatter
                 }
             }
 
+            m_loginProceeding = false;
+
             // 結果表示
             if (!string.IsNullOrEmpty(error))
             {
                 await DisplayAlert("エラー", "ログイン中にエラーが発生しました\n\n" + error, "OK");
             }
-
-            m_loginProceeding = false;
         }
 
 
@@ -233,7 +233,7 @@ namespace Hatenatter
                 };
 
                 var accessToken = await HatenaLogin.Authorize();
-                if (accessToken == null) throw new System.Exception("login error");
+                if (accessToken == null) return "login error";
 
                 m_client = new HatenaClient(accessToken);
 

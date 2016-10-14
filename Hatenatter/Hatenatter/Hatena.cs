@@ -34,11 +34,11 @@ namespace Hatena
             var requestToken = tokenResponse.Token;
             
             // ブラウザ起動
-            var pinRequestUrl = authorizer.BuildAuthorizeUrl("https://www.hatena.ne.jp/touch/oauth/authorize", requestToken);
-            Device.OpenUri(new Uri(pinRequestUrl));
+            var requestUrl = authorizer.BuildAuthorizeUrl("https://www.hatena.ne.jp/touch/oauth/authorize", requestToken);
+            Device.OpenUri(new Uri(requestUrl));
 
             // 認証が成功すると、
-            // http://dev.clock-up.jp/redirect_to_app.php?oauth_token=LjjaOIMY8fXTAA%3D%3D&oauth_verifier=77EbWdvM9KWG1Tjct%2FphLI%2Fp
+            // http://dev.clock-up.jp/redirect_to_app.php?oauth_token=xxxxxx%3D%3D&oauth_verifier=xxxxxxxx%2FphLI%2Fp
             // のようなページが表示される。結果、アプリに呼び戻される
 
             // verifier が来るまで待つ
