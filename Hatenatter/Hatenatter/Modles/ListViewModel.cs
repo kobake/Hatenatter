@@ -67,6 +67,15 @@ namespace Hatenatter.Modles
             //OnPropertyChanged("MyListData"); // これやんなくてもObservableCollectionなので自動的に反映される
         }
 
+        public void Reset(IEnumerable<TimelineItem> items)
+        {
+            list.Clear();
+            foreach (TimelineItem item in items)
+            {
+                list.Add(item);
+            }
+        }
+
         //### こういう変更は見た目に適用されないっぽ…？
         public void Change(string t)
         {

@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 //using System.Security.Cryptography;
@@ -19,6 +20,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xamarin.Auth;
 using Xamarin.Forms;
+using System.IO;
 
 namespace Hatenatter
 {
@@ -35,7 +37,7 @@ namespace Hatenatter
             InitializeComponent();
 
             // 
-            m_myInfo = new UserViewModel { Id = "unknown", DisplayName = "unknown", Image = "login.png" };
+            m_myInfo = new UserViewModel { Id = "", DisplayName = "unknown", Image = "login.png" };
             MyUserLayout.BindingContext = m_myInfo;
 
             // Make data list
@@ -104,22 +106,42 @@ namespace Hatenatter
             });
         }
 
+        // タイムライン更新
         async void RefreshButton_Clicked(object sender, EventArgs e)
         {
-            // タイムライン更新
-            RefreshButton.IsEnabled = false;
-            await Task.Delay(1500);
-            m_list.Add(new TimelineItem
+            // ログインしてない場合は何もしない
+            if (string.IsNullOrEmpty(m_myInfo.Id))
             {
-                ArticleName = "記事",
-                ArticleUrl = "http://",
-                Comment = new HatenaComment
-                {
-                    UserId = "feita",
-                    Comment = "Hello",
-                    Date = "2015/3/1",
-                }
-            });
+                Debug.WriteLine("Error: required to login");
+                return;
+            }
+
+            // 処理中はボタン無効
+            RefreshButton.IsEnabled = false;
+
+            try
+            {
+                // 通信
+                HttpClient client = new HttpClient();
+                client.DefaultRequestHeaders.TryAddWithoutValidation("User-Agent", "Mozilla/5.0 (Windows NT 6.2; WOW64; rv:19.0) Gecko/20100101 Firefox/19.0");
+                client.DefaultRequestHeaders.TryAddWithoutValidation("Accept-Charset", "UTF-8");
+                string url = "http://hatenaproxy.azurewebsites.net/api/timeline?user=" + m_myInfo.Id;
+                string json = await client.GetStringAsync(url);
+
+                // パース
+                TimelineResponse response = JsonConvert.DeserializeObject<TimelineResponse>(json);
+                if (!string.IsNullOrEmpty(response.Error)) throw new Exception(response.Error);
+                if (response.Result != "OK") throw new Exception("不明なエラー");
+
+                // 適用
+                m_list.Reset(response.Timeline);
+            }
+            catch (Exception ex)
+            {
+                await DisplayAlert("エラー", "タイムライン取得時にエラーが発生しました\n\n" + ex.Message, "OK");
+            }
+
+            // 処理終わったらボタン有効
             RefreshButton.IsEnabled = true;
         }
 
@@ -143,7 +165,7 @@ namespace Hatenatter
                 m_myInfo.Image = mymap["profile_image_url"];
                 jsonOk = true;
             }
-            catch(System.Exception ex)
+            catch(System.Exception)
             {
             }
             Debug.WriteLine("=================THREAD_ID = " + Java.Lang.Thread.CurrentThread().Id);
