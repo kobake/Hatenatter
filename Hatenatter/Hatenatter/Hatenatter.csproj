@@ -38,6 +38,7 @@
     <Compile Include="App.cs" />
     <Compile Include="Hatena.cs" />
     <Compile Include="ItemInfo.cs" />
+    <Compile Include="Modles\ListViewModel.cs" />
     <Compile Include="Modles\UserViewModel.cs" />
     <Compile Include="MyListItemView.xaml.cs">
       <DependentUpon>MyListItemView.xaml</DependentUpon>

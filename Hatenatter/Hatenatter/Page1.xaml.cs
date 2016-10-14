@@ -26,6 +26,7 @@ namespace Hatenatter
     {
         Random m_random = new Random();
         public UserViewModel m_myInfo { get; set; }
+        public ListViewModel m_list { get; set; }
 
         public Page1()
         {
@@ -36,8 +37,8 @@ namespace Hatenatter
             MyUserLayout.BindingContext = m_myInfo;
 
             // Make data list
-            List<ItemInfo> list = new List<ItemInfo>();
-            list.Add(
+            m_list = new ListViewModel();
+            m_list.Add(
                 new ItemInfo
                 {
                     Image = "https://avatars0.githubusercontent.com/u/20608487?v=3&s=200",
@@ -45,7 +46,7 @@ namespace Hatenatter
                     State = "Hello"
                 }
             );
-            list.Add(
+            m_list.Add(
                 new ItemInfo
                 {
                     Image = "https://avatars0.githubusercontent.com/u/20608487?v=3&s=200",
@@ -53,7 +54,7 @@ namespace Hatenatter
                     State = "Hello"
                 }
             );
-            list.Add(
+            m_list.Add(
                 new ItemInfo
                 {
                     Image = "https://avatars0.githubusercontent.com/u/20608487?v=3&s=200",
@@ -64,7 +65,7 @@ namespace Hatenatter
 
             // Bind
             //this.BindingContext = list;
-            MyList.BindingContext = list;
+            MyList.BindingContext = m_list;
         }
 
         int m_n = 0;
