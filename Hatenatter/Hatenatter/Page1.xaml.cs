@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 //using System.Security.Cryptography;
@@ -19,6 +20,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xamarin.Auth;
 using Xamarin.Forms;
+using System.IO;
 
 namespace Hatenatter
 {
@@ -108,7 +110,15 @@ namespace Hatenatter
         {
             // タイムライン更新
             RefreshButton.IsEnabled = false;
-            await Task.Delay(1500);
+
+            HttpClient client = new HttpClient();
+            client.DefaultRequestHeaders.TryAddWithoutValidation("Accept", "text/html,application/xhtml+xml,application/xml");
+            client.DefaultRequestHeaders.TryAddWithoutValidation("Accept-Encoding", "gzip, deflate");
+            client.DefaultRequestHeaders.TryAddWithoutValidation("User-Agent", "Mozilla/5.0 (Windows NT 6.2; WOW64; rv:19.0) Gecko/20100101 Firefox/19.0");
+            client.DefaultRequestHeaders.TryAddWithoutValidation("Accept-Charset", "UTF-8");
+            string url = "http://dev.clock-up.jp/jp.txt";
+            string test = await client.GetStringAsync(url);
+
             m_list.Add(new TimelineItem
             {
                 ArticleName = "記事",
@@ -116,7 +126,7 @@ namespace Hatenatter
                 Comment = new HatenaComment
                 {
                     UserId = "feita",
-                    Comment = "Hello",
+                    Comment = test,
                     Date = "2015/3/1",
                 }
             });
