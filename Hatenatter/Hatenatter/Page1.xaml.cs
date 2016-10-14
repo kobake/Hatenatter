@@ -64,8 +64,9 @@ namespace Hatenatter
             );
 
             // Bind
-            //this.BindingContext = list;
-            MyList.BindingContext = m_list;
+            //this.BindingContext = m_list;
+            MyListFrame.BindingContext = m_list;
+            //MyList.ItemsSource = m_list.MyListData;
         }
 
         int m_n = 0;
@@ -74,13 +75,16 @@ namespace Hatenatter
             //var result = await UserDialogs.Instance.PromptAsync("ENTER PIN", inputType: InputType.Default);
 
             //await DisplayAlert("Title", "result = " + result.Text, "OK");
-            for(int i = 0; i < 3; i++)
+            for(int i = 0; i < 2; i++)
             {
                 m_n++;
                 LoginLabel.Text = "TEST" + m_n;
                 await Task.Delay(500);
                 m_myInfo.DisplayName = "TEST" + m_n;
                 await Task.Delay(500);
+                //m_list.Add(new ItemInfo { Name = "TEST" + m_n, Image = "", State = "hello" });
+                m_list.Add(new ItemInfo { Name = "TEST" + m_n, Image = "", State = "Hello" });
+                m_list.MyListData.RemoveAt(0);
             }
             Debug.WriteLine("=================THREAD_ID = " + Thread.CurrentThread().Id);
         }
