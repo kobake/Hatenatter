@@ -3,7 +3,6 @@ using AsyncOAuth;
 using Hatena;
 using Hatenatter.Models;
 using Hatenatter.Modles;
-//using Java.Lang;
 using Newtonsoft.Json;
 using PCLCrypto;
 using System;
@@ -94,26 +93,43 @@ namespace Hatenatter
             // 処理中はボタン無効
             RefreshButton.IsEnabled = false;
 
-            try
+            // ローディング表示
+            var config = new ProgressDialogConfig()
+                .SetTitle("Loading...")
+                .SetIsDeterministic(false)
+                .SetMaskType(MaskType.Black);
+            string error = "";
+            using (UserDialogs.Instance.Progress(config))
             {
-                // 通信
-                HttpClient client = new HttpClient();
-                client.DefaultRequestHeaders.TryAddWithoutValidation("User-Agent", "Mozilla/5.0 (Windows NT 6.2; WOW64; rv:19.0) Gecko/20100101 Firefox/19.0");
-                client.DefaultRequestHeaders.TryAddWithoutValidation("Accept-Charset", "UTF-8");
-                string url = "http://hatenaproxy.azurewebsites.net/api/timeline?user=" + m_myInfo.Id;
-                string json = await client.GetStringAsync(url);
+                try
+                {
+                    // 通信
+                    HttpClient client = new HttpClient();
+                    client.DefaultRequestHeaders.TryAddWithoutValidation("User-Agent", "Mozilla/5.0 (Windows NT 6.2; WOW64; rv:19.0) Gecko/20100101 Firefox/19.0");
+                    client.DefaultRequestHeaders.TryAddWithoutValidation("Accept-Charset", "UTF-8");
+                    string url = "http://hatenaproxy.azurewebsites.net/api/timeline?user=" + m_myInfo.Id;
+                    string json = await client.GetStringAsync(url);
 
-                // パース
-                TimelineResponse response = JsonConvert.DeserializeObject<TimelineResponse>(json);
-                if (!string.IsNullOrEmpty(response.Error)) throw new Exception(response.Error);
-                if (response.Result != "OK") throw new Exception("不明なエラー");
+                    // パース
+                    TimelineResponse response = JsonConvert.DeserializeObject<TimelineResponse>(json);
+                    if (!string.IsNullOrEmpty(response.Error)) throw new Exception(response.Error);
+                    if (response.Result != "OK") throw new Exception("不明なエラー");
 
-                // 適用
-                m_list.Reset(response.Timeline);
+                    // 適用
+                    m_list.Reset(response.Timeline);
+                }
+                catch (Exception ex)
+                {
+                    error = ex.Message;
+                }
             }
-            catch (Exception ex)
+            // using 抜けたらローディング表示消える
+
+
+            // エラーが発生していたら表示
+            if(error != "")
             {
-                await DisplayAlert("エラー", "タイムライン取得時にエラーが発生しました\n\n" + ex.Message, "OK");
+                await DisplayAlert("エラー", "タイムライン取得時にエラーが発生しました\n\n" + error, "OK");
             }
 
             // 処理終わったらボタン有効
@@ -126,46 +142,57 @@ namespace Hatenatter
             if (m_loginProceeding) return;
             m_loginProceeding = true;
 
-            // ログイン
-            string result = await StartAuth();
 
-            // JSONパース
-            // {"profile_image_url":"http://cdn1......gif?111111", "url_name":"kobake", "display_name": "kobake"}
-            bool jsonOk = false;
-            try
+            // ローディング表示
+            var config = new ProgressDialogConfig()
+                .SetTitle("Login...")
+                .SetIsDeterministic(false)
+                .SetMaskType(MaskType.Black);
+            string error = "";
+            using (UserDialogs.Instance.Progress(config))
             {
-                Dictionary<string, string> mymap = JsonConvert.DeserializeObject<Dictionary<string, string>>(result);
-                m_myInfo.Id = mymap["url_name"];
-                m_myInfo.DisplayName = mymap["display_name"];
-                m_myInfo.Image = mymap["profile_image_url"];
-                jsonOk = true;
+                await Task.Delay(500);
+                // ログイン
+                try
+                {
+                    string resultJson = await StartAuth();
+
+                    if (!resultJson.StartsWith("{"))
+                    {
+                        error = resultJson;
+                    }
+                    else
+                    {
+                        // JSONパース
+                        try
+                        {
+                            // {"profile_image_url":"http://cdn1......gif?111111", "url_name":"kobake", "display_name": "kobake"}
+                            Dictionary<string, string> mymap = JsonConvert.DeserializeObject<Dictionary<string, string>>(resultJson);
+                            m_myInfo.Id = mymap["url_name"];
+                            m_myInfo.DisplayName = mymap["display_name"];
+                            m_myInfo.Image = mymap["profile_image_url"];
+                        }
+                        catch (Exception)
+                        {
+                            throw new Exception("不正なサーバ応答");
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    error = ex.Message;
+                }
             }
-            catch(System.Exception)
-            {
-            }
-            Debug.WriteLine("=================THREAD_ID = " + Java.Lang.Thread.CurrentThread().Id);
 
             // 結果表示
-            if (!jsonOk)
+            if (!string.IsNullOrEmpty(error))
             {
-                await DisplayAlert("Title", "result = " + result, "OK");
+                await DisplayAlert("エラー", "ログイン中にエラーが発生しました\n\n" + error, "OK");
             }
 
             m_loginProceeding = false;
         }
 
-        
-
-        /*
-        class HMACSHA1 : IDisposable
-        {
-            public HMACSHA1(byte[] b) { }
-            public byte[] ComputeHash(byte[] b) { return null; }
-            public void Dispose()
-            {
-            }
-        }
-        */
 
         // http://stackoverflow.com/questions/36700530/sha1-keyed-hash-with-hmac-in-xamarin-forms-pcl-c-equivalent-to-hash-hmac-in-ph
         // .NET 4.6 以降であれば HMACSHA1 が使えるが、Xamarin だと 4.5 になってしまうので自前でやる
@@ -196,14 +223,14 @@ namespace Hatenatter
 
         private async Task<string> StartAuth()
         {
-            // initialize computehash function
-            OAuthUtility.ComputeHash = (key, buffer) =>
-            {
-                return hash_hmacSha1(buffer, key);
-            };
-
             try
             {
+                // initialize computehash function
+                OAuthUtility.ComputeHash = (key, buffer) =>
+                {
+                    return hash_hmacSha1(buffer, key);
+                };
+
                 var accessToken = await HatenaLogin.Authorize();
                 if (accessToken == null) throw new System.Exception("login error");
 
@@ -212,17 +239,11 @@ namespace Hatenatter
                 var my = await m_client.GetMy();
                 Debug.WriteLine("my = " + my);
 
-                
-
                 return my;
             }
-            catch (Java.Lang.Exception ex)
+            catch(Exception ex)
             {
-                return "error: " + ex.Message;
-            }
-            catch (System.Exception ex)
-            {
-                return "error: " + ex.Message;
+                return ex.Message;
             }
         }
     }
