@@ -1,7 +1,11 @@
 ﻿using AsyncOAuth;
+using Hatenatter.Models;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Security.Cryptography;
@@ -38,29 +42,44 @@ namespace HatenatterConsole
 
         static void Main(string[] args)
         {
-            Run().Wait();
+            Console.OutputEncoding = Encoding.UTF8;
+            Main2().Wait();
         }
 
-
-
-        static void Main2(string[] args)
+        static async Task Main2()
         {
-            Console.WriteLine("--------");
-            Task.Run(async () =>
+            try
             {
-                int n = await StartAuth();
+                string url = "http://hatenaproxy.azurewebsites.net/api/timeline?user=" + "kobake";
+
+                // 通信
+                HttpClient client = new HttpClient();
+                client.DefaultRequestHeaders.TryAddWithoutValidation("User-Agent", "Mozilla/5.0 (Windows NT 6.2; WOW64; rv:19.0) Gecko/20100101 Firefox/19.0");
+                client.DefaultRequestHeaders.TryAddWithoutValidation("Accept-Charset", "UTF-8");
+                string json = await client.GetStringAsync(url);
                 /*
-                var twitter = new TwitterApi(
-                    "YHLiiAcYskxyO1aJGg1DyUhCB",
-                    "bLAj2ybkvnAeIoT3cqas9sIOO36IlMbvsZakE0KdNkNb7awbqs",
-                    "115328417-sA6umXj4pnVv33PPcx4j4dOySHke9V6K737FP6NA",
-                    "Raf7pNp54enjYp3S81Mg0CYnUkDr8Oy9nZnNP48QR6eGf"
-                );
-                var response = await twitter.Tweet("Test");
-                Console.WriteLine("response = " + response);
+                WebClient client = new WebClient();
+                client.Encoding = Encoding.UTF8;
+                client.Headers.Add("Accept-Charset", "UTF-8");
+                string json = await client.DownloadStringTaskAsync(url);
                 */
-            }).Wait();
-            Console.WriteLine("--------");
+                /*
+                string json = File.ReadAllText(@"C:\Projects\Hatenatter\_gomi\sample.json");
+                */
+                Console.WriteLine(json);
+
+                // パース
+                TimelineResponse response = JsonConvert.DeserializeObject<TimelineResponse>(json);
+                if (!string.IsNullOrEmpty(response.Error)) throw new Exception(response.Error);
+                if (response.Result != "OK") throw new Exception("不明なエラー");
+
+                // 適用
+                Console.WriteLine(response.Result);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("タイムライン取得時にエラーが発生しました: " + ex.Message);
+            }
         }
 
 
