@@ -101,6 +101,7 @@ namespace Hatenatter
             string error = "";
             using (UserDialogs.Instance.Progress(config))
             {
+                await Task.Delay(300);
                 try
                 {
                     // 通信
