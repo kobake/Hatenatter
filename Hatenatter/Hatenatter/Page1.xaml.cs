@@ -34,7 +34,7 @@ namespace Hatenatter
             InitializeComponent();
 
             // 
-            m_myInfo = new UserViewModel { Id = "unknown", DisplayName = "unknown", Image = "" };
+            m_myInfo = new UserViewModel { Id = "unknown", DisplayName = "unknown", Image = "login.png" };
             MyUserLayout.BindingContext = m_myInfo;
 
             // Make data list
@@ -68,89 +68,39 @@ namespace Hatenatter
             //this.BindingContext = m_list;
             MyListFrame.BindingContext = m_list;
             //MyList.ItemsSource = m_list.MyListData;
+
+            // 右上ユーザ画像タップ
+            var profileTapRecognizer = new TapGestureRecognizer
+            {
+                Command = new Command(() => {
+                    OnUserIconClicked();
+                }),
+                NumberOfTapsRequired = 1
+            };
+            UserIcon.GestureRecognizers.Add(profileTapRecognizer);
         }
 
-        int m_n = 0;
-        private async void TestButton_Clicked(object sender, EventArgs e)
+        void OnUserIconClicked()
         {
-            //var result = await UserDialogs.Instance.PromptAsync("ENTER PIN", inputType: InputType.Default);
-
-            //await DisplayAlert("Title", "result = " + result.Text, "OK");
-            for (int i = 0; i < 2; i++)
+            Task.Run(async () =>
             {
-                m_n++;
-                LoginLabel.Text = "TEST" + m_n;
-                await Task.Delay(500);
-                m_myInfo.DisplayName = "TEST" + m_n;
-                await Task.Delay(500);
-                //m_list.Add(new ItemInfo { Name = "TEST" + m_n, Image = "", State = "hello" });
-                m_list.Add(new ItemInfo { Name = "TEST" + m_n, Image = "", State = "Hello" });
-                m_list.MyListData.RemoveAt(0);
-            }
-            Debug.WriteLine("=================THREAD_ID = " + Java.Lang.Thread.CurrentThread().Id);
-        }
-        private async void TagButton_Clicked(object sender, EventArgs e)
-        {
-        }
-        private async void EntryButton_Clicked(object sender, EventArgs e)
-        {
-        }
-        private async void BookmarkButton_Clicked(object sender, EventArgs e)
-        {
-            BookmarkButton.IsEnabled = false;
-            try
-            {
-                if (m_client == null)
-                {
-                    await DisplayAlert("ERROR", "まだログインしていません", "OK");
-                    return;
-                }
-                Debug.WriteLine("==========================================");
-                var json = await m_client.GetBookmark();
-                Debug.WriteLine("bookmark json = " + json);
-                Debug.WriteLine("");
-                Debug.WriteLine("");
-            }
-            catch(Exception ex)
-            {
-                await DisplayAlert("ERROR", ex.Message, "OK");
-            }
-            finally
-            {
-                BookmarkButton.IsEnabled = true;
-            }
-        }
-        private async void AnyButton_Clicked(object sender, EventArgs e)
-        {
-            AnyButton.IsEnabled = false;
-            try
-            {
-                if (m_client == null)
-                {
-                    await DisplayAlert("ERROR", "まだログインしていません", "OK");
-                    return;
-                }
-                Debug.WriteLine("==========================================");
-                string url = UrlInput.Text;
-                var json = await m_client.GetAny(url);
-                Debug.WriteLine("any json = " + json);
-                Debug.WriteLine("");
-                Debug.WriteLine("");
-            }
-            catch (Exception ex)
-            {
-                await DisplayAlert("ERROR", ex.Message, "OK");
-            }
-            finally
-            {
-                AnyButton.IsEnabled = true;
-            }
+                await AuthButton_Clicked(null, null);
+            });
         }
 
-
-        private async void AuthButton_Clicked(object sender, EventArgs e)
+        async void RefreshButton_Clicked(object sender, EventArgs e)
         {
-            AuthButton.IsEnabled = false;
+            // タイムライン更新
+            RefreshButton.IsEnabled = false;
+            await Task.Delay(1500);
+            RefreshButton.IsEnabled = true;
+        }
+
+        bool m_loginProceeding = false;
+        async Task AuthButton_Clicked(object sender, EventArgs e)
+        {
+            if (m_loginProceeding) return;
+            m_loginProceeding = true;
 
             // ログイン
             string result = await StartAuth();
@@ -177,7 +127,7 @@ namespace Hatenatter
                 await DisplayAlert("Title", "result = " + result, "OK");
             }
 
-            AuthButton.IsEnabled = true;
+            m_loginProceeding = false;
         }
 
         
