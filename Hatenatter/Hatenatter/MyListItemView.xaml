@@ -6,8 +6,16 @@
     <StackLayout Orientation="Horizontal" Padding="10" VerticalOptions="Start">
       <Image Source="{Binding Comment.UserImage}" WidthRequest="50" VerticalOptions="Start" />
       <StackLayout Orientation="Vertical" Padding="10, 0, 0, 0">
-        <Label Text="{Binding Comment.UserId}" />
+        <StackLayout Orientation="Horizontal">
+          <Label Text="id:" />
+          <Label Text="{Binding Comment.UserId}" />
+          <Label Text="{Binding Comment.Date}" Margin="5,0,0,0" />
+        </StackLayout>
         <Label Text="{Binding Comment.Comment}" />
+        <StackLayout Orientation="Horizontal">
+          <Label Text="■" FontSize="Micro" />
+          <Label Text="{Binding ArticleName}" FontSize="Micro" />
+        </StackLayout>
       </StackLayout>
     </StackLayout>
   </ContentView.Content>
