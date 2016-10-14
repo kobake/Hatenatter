@@ -2,7 +2,7 @@
 using AsyncOAuth;
 using Hatena;
 using Hatenatter.Modles;
-using Java.Lang;
+//using Java.Lang;
 using Newtonsoft.Json;
 using PCLCrypto;
 using System;
@@ -27,6 +27,7 @@ namespace Hatenatter
         Random m_random = new Random();
         public UserViewModel m_myInfo { get; set; }
         public ListViewModel m_list { get; set; }
+        HatenaClient m_client = null;
 
         public Page1()
         {
@@ -70,12 +71,12 @@ namespace Hatenatter
         }
 
         int m_n = 0;
-        private async void PinButton_Clicked(object sender, EventArgs e)
+        private async void TestButton_Clicked(object sender, EventArgs e)
         {
             //var result = await UserDialogs.Instance.PromptAsync("ENTER PIN", inputType: InputType.Default);
 
             //await DisplayAlert("Title", "result = " + result.Text, "OK");
-            for(int i = 0; i < 2; i++)
+            for (int i = 0; i < 2; i++)
             {
                 m_n++;
                 LoginLabel.Text = "TEST" + m_n;
@@ -86,8 +87,66 @@ namespace Hatenatter
                 m_list.Add(new ItemInfo { Name = "TEST" + m_n, Image = "", State = "Hello" });
                 m_list.MyListData.RemoveAt(0);
             }
-            Debug.WriteLine("=================THREAD_ID = " + Thread.CurrentThread().Id);
+            Debug.WriteLine("=================THREAD_ID = " + Java.Lang.Thread.CurrentThread().Id);
         }
+        private async void TagButton_Clicked(object sender, EventArgs e)
+        {
+        }
+        private async void EntryButton_Clicked(object sender, EventArgs e)
+        {
+        }
+        private async void BookmarkButton_Clicked(object sender, EventArgs e)
+        {
+            BookmarkButton.IsEnabled = false;
+            try
+            {
+                if (m_client == null)
+                {
+                    await DisplayAlert("ERROR", "まだログインしていません", "OK");
+                    return;
+                }
+                Debug.WriteLine("==========================================");
+                var json = await m_client.GetBookmark();
+                Debug.WriteLine("bookmark json = " + json);
+                Debug.WriteLine("");
+                Debug.WriteLine("");
+            }
+            catch(Exception ex)
+            {
+                await DisplayAlert("ERROR", ex.Message, "OK");
+            }
+            finally
+            {
+                BookmarkButton.IsEnabled = true;
+            }
+        }
+        private async void AnyButton_Clicked(object sender, EventArgs e)
+        {
+            AnyButton.IsEnabled = false;
+            try
+            {
+                if (m_client == null)
+                {
+                    await DisplayAlert("ERROR", "まだログインしていません", "OK");
+                    return;
+                }
+                Debug.WriteLine("==========================================");
+                string url = UrlInput.Text;
+                var json = await m_client.GetAny(url);
+                Debug.WriteLine("any json = " + json);
+                Debug.WriteLine("");
+                Debug.WriteLine("");
+            }
+            catch (Exception ex)
+            {
+                await DisplayAlert("ERROR", ex.Message, "OK");
+            }
+            finally
+            {
+                AnyButton.IsEnabled = true;
+            }
+        }
+
 
         private async void AuthButton_Clicked(object sender, EventArgs e)
         {
@@ -98,20 +157,25 @@ namespace Hatenatter
 
             // JSONパース
             // {"profile_image_url":"http://cdn1......gif?111111", "url_name":"kobake", "display_name": "kobake"}
+            bool jsonOk = false;
             try
             {
                 Dictionary<string, string> mymap = JsonConvert.DeserializeObject<Dictionary<string, string>>(result);
                 m_myInfo.Id = mymap["url_name"];
                 m_myInfo.DisplayName = mymap["display_name"];
                 m_myInfo.Image = mymap["profile_image_url"];
+                jsonOk = true;
             }
             catch(System.Exception ex)
             {
             }
-            Debug.WriteLine("=================THREAD_ID = " + Thread.CurrentThread().Id);
+            Debug.WriteLine("=================THREAD_ID = " + Java.Lang.Thread.CurrentThread().Id);
 
             // 結果表示
-            await DisplayAlert("Title", "result = " + result, "OK");
+            if (!jsonOk)
+            {
+                await DisplayAlert("Title", "result = " + result, "OK");
+            }
 
             AuthButton.IsEnabled = true;
         }
@@ -169,9 +233,9 @@ namespace Hatenatter
                 var accessToken = await HatenaLogin.Authorize();
                 if (accessToken == null) throw new System.Exception("login error");
 
-                var client = new HatenaClient(accessToken);
+                m_client = new HatenaClient(accessToken);
 
-                var my = await client.GetMy();
+                var my = await m_client.GetMy();
                 Debug.WriteLine("my = " + my);
 
                 

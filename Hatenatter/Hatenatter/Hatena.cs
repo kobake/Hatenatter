@@ -101,6 +101,20 @@ namespace Hatena
             var json = await client.GetStringAsync("http://n.hatena.com/applications/my.json");
             return json;
         }
+        public async Task<string> GetBookmark()
+        {
+            var client = CreateOAuthClient();
+
+            var json = await client.GetStringAsync("http://api.b.hatena.ne.jp/1/my/bookmark.json");
+            return json;
+        }
+        public async Task<string> GetAny(string url)
+        {
+            var client = CreateOAuthClient();
+
+            var json = await client.GetStringAsync(url);
+            return json;
+        }
 
         public async Task<string> AppicationStart()
         {

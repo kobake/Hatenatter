@@ -14,7 +14,23 @@
       <Label Text="{Binding Id}" />
       <Label Text=") としてログインしています" />
     </StackLayout>
-    <Button x:Name="PinButton" Text="PIN" Clicked="PinButton_Clicked" />
+    <Grid Margin="10,10,10,10">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="150" /> <!-- 45 -->
+      </Grid.RowDefinitions>
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="*" />
+        <ColumnDefinition Width="100" />
+      </Grid.ColumnDefinitions>
+      <Editor x:Name="UrlInput" Grid.Row="0" Grid.Column="0" />
+      <Button x:Name="AnyButton" Text="Any" Clicked="AnyButton_Clicked" Grid.Row="0" Grid.Column="1" />
+    </Grid>
+    <StackLayout Orientation="Horizontal" HorizontalOptions="StartAndExpand">
+      <Button x:Name="TestButton" Text="TEST" Clicked="TestButton_Clicked" />
+      <Button x:Name="TagButton" Text="Tags" Clicked="TagButton_Clicked" />
+      <Button x:Name="EntryButton" Text="Entry" Clicked="EntryButton_Clicked" />
+      <Button x:Name="BookmarkButton" Text="Book" Clicked="BookmarkButton_Clicked" />
+    </StackLayout>
     <Label x:Name="LoginLabel" Text="Hello" Margin="15,10,10,10" />
 
     <Frame x:Name="MyListFrame">
