@@ -2,7 +2,7 @@
 using AsyncOAuth;
 using Hatena;
 using Hatenatter.Modles;
-using Java.Lang;
+//using Java.Lang;
 using Newtonsoft.Json;
 using PCLCrypto;
 using System;
@@ -27,13 +27,14 @@ namespace Hatenatter
         Random m_random = new Random();
         public UserViewModel m_myInfo { get; set; }
         public ListViewModel m_list { get; set; }
+        HatenaClient m_client = null;
 
         public Page1()
         {
             InitializeComponent();
 
             // 
-            m_myInfo = new UserViewModel { Id = "unknown", DisplayName = "unknown", Image = "" };
+            m_myInfo = new UserViewModel { Id = "unknown", DisplayName = "unknown", Image = "login.png" };
             MyUserLayout.BindingContext = m_myInfo;
 
             // Make data list
@@ -67,53 +68,66 @@ namespace Hatenatter
             //this.BindingContext = m_list;
             MyListFrame.BindingContext = m_list;
             //MyList.ItemsSource = m_list.MyListData;
-        }
 
-        int m_n = 0;
-        private async void PinButton_Clicked(object sender, EventArgs e)
-        {
-            //var result = await UserDialogs.Instance.PromptAsync("ENTER PIN", inputType: InputType.Default);
-
-            //await DisplayAlert("Title", "result = " + result.Text, "OK");
-            for(int i = 0; i < 2; i++)
+            // 右上ユーザ画像タップ
+            var profileTapRecognizer = new TapGestureRecognizer
             {
-                m_n++;
-                LoginLabel.Text = "TEST" + m_n;
-                await Task.Delay(500);
-                m_myInfo.DisplayName = "TEST" + m_n;
-                await Task.Delay(500);
-                //m_list.Add(new ItemInfo { Name = "TEST" + m_n, Image = "", State = "hello" });
-                m_list.Add(new ItemInfo { Name = "TEST" + m_n, Image = "", State = "Hello" });
-                m_list.MyListData.RemoveAt(0);
-            }
-            Debug.WriteLine("=================THREAD_ID = " + Thread.CurrentThread().Id);
+                Command = new Command(() => {
+                    OnUserIconClicked();
+                }),
+                NumberOfTapsRequired = 1
+            };
+            UserIcon.GestureRecognizers.Add(profileTapRecognizer);
         }
 
-        private async void AuthButton_Clicked(object sender, EventArgs e)
+        void OnUserIconClicked()
         {
-            AuthButton.IsEnabled = false;
+            Task.Run(async () =>
+            {
+                await AuthButton_Clicked(null, null);
+            });
+        }
+
+        async void RefreshButton_Clicked(object sender, EventArgs e)
+        {
+            // タイムライン更新
+            RefreshButton.IsEnabled = false;
+            await Task.Delay(1500);
+            RefreshButton.IsEnabled = true;
+        }
+
+        bool m_loginProceeding = false;
+        async Task AuthButton_Clicked(object sender, EventArgs e)
+        {
+            if (m_loginProceeding) return;
+            m_loginProceeding = true;
 
             // ログイン
             string result = await StartAuth();
 
             // JSONパース
             // {"profile_image_url":"http://cdn1......gif?111111", "url_name":"kobake", "display_name": "kobake"}
+            bool jsonOk = false;
             try
             {
                 Dictionary<string, string> mymap = JsonConvert.DeserializeObject<Dictionary<string, string>>(result);
                 m_myInfo.Id = mymap["url_name"];
                 m_myInfo.DisplayName = mymap["display_name"];
                 m_myInfo.Image = mymap["profile_image_url"];
+                jsonOk = true;
             }
             catch(System.Exception ex)
             {
             }
-            Debug.WriteLine("=================THREAD_ID = " + Thread.CurrentThread().Id);
+            Debug.WriteLine("=================THREAD_ID = " + Java.Lang.Thread.CurrentThread().Id);
 
             // 結果表示
-            await DisplayAlert("Title", "result = " + result, "OK");
+            if (!jsonOk)
+            {
+                await DisplayAlert("Title", "result = " + result, "OK");
+            }
 
-            AuthButton.IsEnabled = true;
+            m_loginProceeding = false;
         }
 
         
@@ -169,9 +183,9 @@ namespace Hatenatter
                 var accessToken = await HatenaLogin.Authorize();
                 if (accessToken == null) throw new System.Exception("login error");
 
-                var client = new HatenaClient(accessToken);
+                m_client = new HatenaClient(accessToken);
 
-                var my = await client.GetMy();
+                var my = await m_client.GetMy();
                 Debug.WriteLine("my = " + my);
 
                 

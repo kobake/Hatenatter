@@ -5,17 +5,13 @@
              xmlns:local="clr-namespace:Hatenatter;assembly=Hatenatter"
              >
   <StackLayout VerticalOptions="Start">
-    <Button x:Name="AuthButton" Text="Auth" Clicked="AuthButton_Clicked" />
+    <StackLayout x:Name="MyUserLayout" Orientation="Horizontal" HorizontalOptions="Fill" BindingContext="{Binding MyUserData}">
+      <Button x:Name="RefreshButton" Text="更新" Clicked="RefreshButton_Clicked" />
 
-    <StackLayout x:Name="MyUserLayout" Orientation="Horizontal" HorizontalOptions="Start" BindingContext="{Binding MyUserData}">
-      <Image Source="{Binding Image}" WidthRequest="50" VerticalOptions="Start" />
-      <Label Text="{Binding DisplayName}" />
-      <Label Text="( id:" />
-      <Label Text="{Binding Id}" />
-      <Label Text=") としてログインしています" />
+      <Frame OutlineColor="#ff0" VerticalOptions="Center" Padding="1" HorizontalOptions="EndAndExpand" Margin="0,0,5,0" >
+          <Image x:Name="UserIcon" Source="{Binding Image}" HeightRequest="40" WidthRequest="40" HorizontalOptions="EndAndExpand" Margin="0,0,0,0" />
+      </Frame>
     </StackLayout>
-    <Button x:Name="PinButton" Text="PIN" Clicked="PinButton_Clicked" />
-    <Label x:Name="LoginLabel" Text="Hello" Margin="15,10,10,10" />
 
     <Frame x:Name="MyListFrame">
       <ListView x:Name="MyList" ItemsSource="{Binding MyListData}" VerticalOptions="FillAndExpand" HasUnevenRows="True">
