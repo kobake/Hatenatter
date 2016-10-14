@@ -70,6 +70,24 @@ namespace Hatenatter
                 NumberOfTapsRequired = 1
             };
             UserIcon.GestureRecognizers.Add(profileTapRecognizer);
+
+            // リストビュータップ
+            MyList.ItemTapped += OnItemTapped;
+        }
+
+        private void OnItemTapped(object sender, ItemTappedEventArgs e)
+        {
+            Debug.WriteLine("OnItemTapped: " + e.Item.ToString());
+
+            TimelineItem item = e.Item as TimelineItem;
+            if (item != null)
+            {
+                if (!string.IsNullOrEmpty(item.HatenaUrl))
+                {
+                    Debug.WriteLine("OpenByTapItem: " + item.HatenaUrl);
+                    Device.OpenUri(new Uri(item.HatenaUrl));
+                }
+            }
         }
 
         void OnUserIconClicked()

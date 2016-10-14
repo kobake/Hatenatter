@@ -4,7 +4,7 @@
              x:Class="Hatenatter.Page1"
              xmlns:local="clr-namespace:Hatenatter;assembly=Hatenatter"
              >
-  <StackLayout VerticalOptions="Start">
+  <StackLayout VerticalOptions="FillAndExpand">
     <StackLayout x:Name="MyUserLayout" Orientation="Horizontal" HorizontalOptions="Fill" BindingContext="{Binding MyUserData}">
       <Button x:Name="RefreshButton" Text="更新" Clicked="RefreshButton_Clicked" />
 
@@ -13,7 +13,7 @@
       </Frame>
     </StackLayout>
 
-    <Frame x:Name="MyListFrame">
+    <Frame x:Name="MyListFrame" VerticalOptions="FillAndExpand">
       <ListView x:Name="MyList" ItemsSource="{Binding MyListData}" VerticalOptions="FillAndExpand" HasUnevenRows="True">
         <ListView.ItemTemplate>
           <DataTemplate>

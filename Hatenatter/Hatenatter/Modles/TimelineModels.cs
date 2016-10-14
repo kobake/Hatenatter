@@ -45,18 +45,46 @@ namespace Hatenatter.Models
     {
         public string ArticleName { get; set; }
         public string ArticleUrl { get; set; }
+        public string ArticleId { get; set; }
 
+        // "http://b.hatena.ne.jp/entry.touch/s/qiita.com/" のような形式
         public string HatenaUrl
         {
             get
             {
-                // "http://b.hatena.ne.jp/entry/negineesan.hatenablog.com/entry/2016/10/12/202541"
+                if (string.IsNullOrEmpty(ArticleUrl)) return "";
+
                 string url = ArticleUrl;
-                url = Regex.Replace(url, "https?://", "");
-                url = "http://b.hatena.ne.jp/entry/" + url;
+                if (ArticleUrl.StartsWith("http://"))
+                {
+                    url = url.Substring("http://".Length);
+                    url = "http://b.hatena.ne.jp/entry.touch/" + url;
+                }
+                else if (ArticleUrl.StartsWith("https://"))
+                {
+                    url = url.Substring("https://".Length);
+                    url = "http://b.hatena.ne.jp/entry.touch/s/" + url;
+                }
+                else
+                {
+                    url = "http://b.hatena.ne.jp/entry.touch/" + url;
+                }
                 return url;
             }
         }
+        // "http://b.hatena.ne.jp/entry/52080118/comment/hxmasaki" のような形式
+        public string HatenaCommentUrl
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(ArticleId)) return "";
+
+                string url = $"http://b.hatena.ne.jp/entry/{ArticleId}/comment/{Comment.UserId}";
+                return url;
+            }
+        }
+
+
         public int BookmarkCount { get; set; }
 
         public HatenaComment Comment { get; set; }
