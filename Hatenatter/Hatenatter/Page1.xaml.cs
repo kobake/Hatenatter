@@ -142,18 +142,31 @@ namespace Hatenatter
                 "Hatenatter 0.8.0", "Cancel", "Delete",
                 loginOrLogout // 可変個引数で選択肢増やせるが、今のところは「ログイン/ログアウト」しか必要ないのでこれだけ。
             );
-            if(action == "ログイン")
+            if (action == "ログイン")
             {
                 Debug.WriteLine("========================LoginA");
                 await AuthMenu_Clicked();
                 Debug.WriteLine("========================LoginB");
             }
-            else if(action == "ログアウト")
+            else if (action == "ログアウト")
             {
                 Application.Current.Properties["MyInfo"] = "";
                 m_myInfo = new UserViewModel { Id = "", DisplayName = "unknown", Image = "nologin.png" };
                 MyUserLayout.BindingContext = m_myInfo;
                 m_list.Clear();
+                m_list.Add(
+                    new TimelineItem
+                    {
+                        ArticleName = "",
+                        ArticleUrl = "",
+                        Comment = new HatenaComment
+                        {
+                            UserId = "",
+                            Comment = "画面右上のメニューからログインしてください",
+                            Date = "",
+                        }
+                    }
+                );
             }
             else
             {
