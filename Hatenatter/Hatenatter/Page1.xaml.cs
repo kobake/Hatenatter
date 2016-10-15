@@ -281,6 +281,12 @@ namespace Hatenatter
             {
                 string json = JsonConvert.SerializeObject(m_myInfo);
                 Application.Current.Properties["MyInfo"] = json;
+
+                // すぐにタイムラインのロードを始める
+                await Task.Delay(50);
+                Debug.WriteLine("=======RefreshA");
+                await Refresh();
+                Debug.WriteLine("=======RefreshB");
             }
         }
 
