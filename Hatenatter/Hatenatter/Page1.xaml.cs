@@ -96,10 +96,12 @@ namespace Hatenatter
             // ログイン済みの場合はすぐにタイムラインのロードを始める
             Task.Run(async () =>
             {
-                await Task.Delay(50);
+                await Task.Delay(100);
                 Debug.WriteLine("=======Appear1");
-                await Refresh();
+                await Task.Delay(100);
                 Debug.WriteLine("=======Appear2");
+                await Refresh();
+                Debug.WriteLine("=======Appear3");
             });
         }
 
@@ -165,6 +167,7 @@ namespace Hatenatter
         {
             await Refresh();
         }
+        bool m_refreshing = false;
         async Task Refresh()
         {
             // ログインしてない場合は何もしない
@@ -174,9 +177,11 @@ namespace Hatenatter
                 return;
             }
 
-            // 処理中はボタン無効
-            if (!RefreshButton.IsEnabled) return;
-            RefreshButton.IsEnabled = false;
+            // 多重処理防止
+            if (m_refreshing) return;
+            m_refreshing = true;
+
+            await Task.Delay(100);
 
             // ローディング表示
             var config = new ProgressDialogConfig()
@@ -186,7 +191,7 @@ namespace Hatenatter
             string error = "";
             using (UserDialogs.Instance.Progress(config))
             {
-                await Task.Delay(300);
+                await Task.Delay(100);
                 try
                 {
                     // 通信
@@ -211,15 +216,14 @@ namespace Hatenatter
             }
             // using 抜けたらローディング表示消える
 
+            // 処理完了印
+            m_refreshing = false;
 
             // エラーが発生していたら表示
-            if(error != "")
+            if (error != "")
             {
                 await DisplayAlert("エラー", "タイムライン取得時にエラーが発生しました\n\n" + error, "OK");
             }
-
-            // 処理終わったらボタン有効
-            RefreshButton.IsEnabled = true;
         }
 
         bool m_loginProceeding = false;
@@ -227,7 +231,6 @@ namespace Hatenatter
         {
             if (m_loginProceeding) return;
             m_loginProceeding = true;
-
 
             // ローディング表示
             var config = new ProgressDialogConfig()
