@@ -83,6 +83,20 @@ namespace Hatenatter
             MyList.ItemTapped += OnItemTapped;
         }
 
+        protected override void OnAppearing()
+        {
+            base.OnAppearing();
+
+            // ログイン済みの場合はすぐにタイムラインのロードを始める
+            Task.Run(async () =>
+            {
+                await Task.Delay(50);
+                Debug.WriteLine("=======Appear1");
+                await Refresh();
+                Debug.WriteLine("=======Appear2");
+            });
+        }
+
         private void OnItemTapped(object sender, ItemTappedEventArgs e)
         {
             Debug.WriteLine("OnItemTapped: " + e.Item.ToString());
@@ -98,6 +112,7 @@ namespace Hatenatter
             }
         }
 
+        // 認証
         void OnUserIconClicked()
         {
             Task.Run(async () =>
@@ -109,6 +124,10 @@ namespace Hatenatter
         // タイムライン更新
         async void RefreshButton_Clicked(object sender, EventArgs e)
         {
+            await Refresh();
+        }
+        async Task Refresh()
+        {
             // ログインしてない場合は何もしない
             if (string.IsNullOrEmpty(m_myInfo.Id))
             {
@@ -117,6 +136,7 @@ namespace Hatenatter
             }
 
             // 処理中はボタン無効
+            if (!RefreshButton.IsEnabled) return;
             RefreshButton.IsEnabled = false;
 
             // ローディング表示
