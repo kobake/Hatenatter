@@ -38,12 +38,18 @@ namespace Hatenatter
             // ログイン情報の復元 (今回はトークンいらないので ID 表示情報だけ保存するずるい方式)
             if (Application.Current.Properties.ContainsKey("MyInfo"))
             {
-                string json = Application.Current.Properties["MyInfo"] as string;
-                m_myInfo = JsonConvert.DeserializeObject<UserViewModel>(json);
+                try
+                {
+                    string json = Application.Current.Properties["MyInfo"] as string;
+                    m_myInfo = JsonConvert.DeserializeObject<UserViewModel>(json);
+                }
+                catch (Exception)
+                {
+                }
             }
-            else
+            if(m_myInfo == null)
             {
-                m_myInfo = new UserViewModel { Id = "", DisplayName = "unknown", Image = "login.png" };
+                m_myInfo = new UserViewModel { Id = "", DisplayName = "unknown", Image = "nologin.png" };
             }
             MyUserLayout.BindingContext = m_myInfo;
 
@@ -69,15 +75,15 @@ namespace Hatenatter
             MyListFrame.BindingContext = m_list;
             //MyList.ItemsSource = m_list.MyListData;
 
-            // 右上ユーザ画像タップ
-            var profileTapRecognizer = new TapGestureRecognizer
+            // 右上メニュー画像タップ
+            var tapRecognizer = new TapGestureRecognizer
             {
-                Command = new Command(() => {
-                    OnUserIconClicked();
+                Command = new Command(async () => {
+                    await OnMenuIconClicked();
                 }),
                 NumberOfTapsRequired = 1
             };
-            UserIcon.GestureRecognizers.Add(profileTapRecognizer);
+            MenuIcon.GestureRecognizers.Add(tapRecognizer);
 
             // リストビュータップ
             MyList.ItemTapped += OnItemTapped;
@@ -113,12 +119,45 @@ namespace Hatenatter
         }
 
         // 認証
-        void OnUserIconClicked()
+        bool m_menuing = false;
+        async Task OnMenuIconClicked()
         {
-            Task.Run(async () =>
+            if (m_menuing) return;
+            m_menuing = true;
+
+            // メニュー
+            /*
+            CancellationToken cancel = new CancellationToken();
+            var result = await UserDialogs.Instance.ActionSheetAsync(
+                "Hatenatter 0.8.0", // title
+                "Cancel",
+                "Destroy", cancel, "ログイン", "バージョン", "Button3");
+            this.Result(result);
+            */
+            string loginOrLogout = "ログイン";
+            if (!string.IsNullOrEmpty(m_myInfo.Id)) loginOrLogout = "ログアウト";
+            var action = await DisplayActionSheet(
+                "Hatenatter 0.8.0", "Cancel", "Delete",
+                loginOrLogout // 可変個引数で選択肢増やせるが、今のところは「ログイン/ログアウト」しか必要ないのでこれだけ。
+            );
+            if(action == "ログイン")
             {
-                await AuthButton_Clicked(null, null);
-            });
+                Debug.WriteLine("========================LoginA");
+                await AuthMenu_Clicked();
+                Debug.WriteLine("========================LoginB");
+            }
+            else if(action == "ログアウト")
+            {
+                Application.Current.Properties["MyInfo"] = "";
+                m_myInfo = new UserViewModel { Id = "", DisplayName = "unknown", Image = "nologin.png" };
+                MyUserLayout.BindingContext = m_myInfo;
+                m_list.Clear();
+            }
+            else
+            {
+                // 何もしない
+            }
+            m_menuing = false;
         }
 
         // タイムライン更新
@@ -184,7 +223,7 @@ namespace Hatenatter
         }
 
         bool m_loginProceeding = false;
-        async Task AuthButton_Clicked(object sender, EventArgs e)
+        async Task AuthMenu_Clicked()
         {
             if (m_loginProceeding) return;
             m_loginProceeding = true;

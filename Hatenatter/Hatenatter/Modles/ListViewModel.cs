@@ -76,6 +76,11 @@ namespace Hatenatter.Modles
             }
         }
 
+        public void Clear()
+        {
+            list.Clear();
+        }
+
         //### こういう変更は見た目に適用されないっぽ…？
         public void Change(string t)
         {
