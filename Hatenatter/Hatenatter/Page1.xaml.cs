@@ -58,12 +58,12 @@ namespace Hatenatter
             m_list.Add(
                 new TimelineItem
                 {
-                    ArticleName = "記事",
-                    ArticleUrl = "http://",
+                    ArticleName = "",
+                    ArticleUrl = "",
                     Comment = new HatenaComment
                     {
                         UserId = "",
-                        Comment = "ログインしてください",
+                        Comment = "画面右上のメニューからログインしてください",
                         Date = "",
                     }
                 }

@@ -12,9 +12,9 @@
           <Label Text="{Binding Comment.Date}" Margin="5,0,0,0" />
         </StackLayout>
         <Label Text="{Binding Comment.Comment}" />
-        <StackLayout Orientation="Horizontal">
-          <Label Text="■" FontSize="Micro" />
-          <Label Text="{Binding ArticleName}" FontSize="Micro" />
+        <StackLayout Orientation="Horizontal" Margin="0,6,0,0">
+          <Label Text="■" FontSize="Default" />
+          <Label Text="{Binding ArticleName}" FontSize="Default" />
         </StackLayout>
       </StackLayout>
     </StackLayout>
