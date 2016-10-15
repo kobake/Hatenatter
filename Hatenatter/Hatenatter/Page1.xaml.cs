@@ -35,8 +35,16 @@ namespace Hatenatter
         {
             InitializeComponent();
 
-            // 
-            m_myInfo = new UserViewModel { Id = "", DisplayName = "unknown", Image = "login.png" };
+            // ログイン情報の復元 (今回はトークンいらないので ID 表示情報だけ保存するずるい方式)
+            if (Application.Current.Properties.ContainsKey("MyInfo"))
+            {
+                string json = Application.Current.Properties["MyInfo"] as string;
+                m_myInfo = JsonConvert.DeserializeObject<UserViewModel>(json);
+            }
+            else
+            {
+                m_myInfo = new UserViewModel { Id = "", DisplayName = "unknown", Image = "login.png" };
+            }
             MyUserLayout.BindingContext = m_myInfo;
 
             // Make data list
@@ -209,6 +217,11 @@ namespace Hatenatter
             if (!string.IsNullOrEmpty(error))
             {
                 await DisplayAlert("エラー", "ログイン中にエラーが発生しました\n\n" + error, "OK");
+            }
+            else
+            {
+                string json = JsonConvert.SerializeObject(m_myInfo);
+                Application.Current.Properties["MyInfo"] = json;
             }
         }
 
