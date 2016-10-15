@@ -131,7 +131,7 @@ namespace Hatenatter
             string loginOrLogout = "ログイン";
             if (!string.IsNullOrEmpty(m_myInfo.Id)) loginOrLogout = "ログアウト";
             var action = await DisplayActionSheet(
-                "Hatenatter 0.8.1", "Cancel", "Delete",
+                "Hatenatter 0.8.2", "Cancel", "Delete",
                 loginOrLogout // 可変個引数で選択肢増やせるが、今のところは「ログイン/ログアウト」しか必要ないのでこれだけ。
             );
             if (action == "ログイン")
