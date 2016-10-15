@@ -128,18 +128,10 @@ namespace Hatenatter
             m_menuing = true;
 
             // メニュー
-            /*
-            CancellationToken cancel = new CancellationToken();
-            var result = await UserDialogs.Instance.ActionSheetAsync(
-                "Hatenatter 0.8.0", // title
-                "Cancel",
-                "Destroy", cancel, "ログイン", "バージョン", "Button3");
-            this.Result(result);
-            */
             string loginOrLogout = "ログイン";
             if (!string.IsNullOrEmpty(m_myInfo.Id)) loginOrLogout = "ログアウト";
             var action = await DisplayActionSheet(
-                "Hatenatter 0.8.0", "Cancel", "Delete",
+                "Hatenatter 0.8.1", "Cancel", "Delete",
                 loginOrLogout // 可変個引数で選択肢増やせるが、今のところは「ログイン/ログアウト」しか必要ないのでこれだけ。
             );
             if (action == "ログイン")
